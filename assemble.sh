@@ -4,4 +4,4 @@ set -e
 cd "$(dirname "$0")"
 f=parts/lima-v1.html
 end=$(grep -n "TYCOON DEFINITIONS" $f | cut -d: -f1)
-{ cat parts/store.css parts/game.css; sed -n "163,$((end-1))p" $f; cat parts/games.js parts/storeui.js parts/shell2.js; } > lima.html
+{ cat parts/store.css parts/game.css; sed -n "163,$((end-1))p" $f; cat parts/games.js parts/storeui.js parts/extras.js parts/shell2.js; } > lima.html

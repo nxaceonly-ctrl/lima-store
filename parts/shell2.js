@@ -23,7 +23,7 @@ function loop(){
  renderTop();
  var sg=GM.sig(S,tab);if(sg!==lastSig)renderBody();
  live();
- if(Date.now()-lastSave>4000){gsave(cur,S);lastSave=Date.now()}
+ if(Date.now()-lastSave>4000){gsave(cur,S);lastSave=Date.now();checkTrophies()}
 }
 function renderTop(){
  $("#gTop").innerHTML=GM.top(S);var r=GM.rank(S);$("#gRank").textContent=r.name;$("#gNext").textContent=r.next?"→ "+r.next:"Sommet atteint";$("#gBar").style.width=(r.p*100).toFixed(1)+"%";
@@ -91,8 +91,7 @@ function playIntro(){
  setTimeout(function(){if(el.parentNode)el.remove()},6000);
 }
 
-renderStore();
-playIntro();
+applyLook();trackDay();renderStore();playIntro();setTimeout(checkTrophies,3200);
 var h0=location.hash.slice(1);if(GAMES[h0])openGame(h0,true);
 })();
 </script>
