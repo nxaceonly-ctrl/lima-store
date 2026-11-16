@@ -13,4 +13,5 @@ wrap lima.html site/index.html "Lima" "#ECE8DF" '<link rel="manifest" href="mani
 wrap ../qg/qg.html site/apps/qg.html "QG" "#2A2D2F"
 wrap ../relais/relais.html site/apps/champion.html "Champion" "#0F0D12"
 wrap ../frequence/frequence.html site/apps/frequence.html "Fréquence" "#0D1410"
+wrap volta/volta.html site/apps/volta.html "Volta" "#0B0B0F"
 wrap ../ciel/ciel.html site/apps/ciel.html "Ciel" "#243A6B"
