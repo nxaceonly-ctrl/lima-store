@@ -9,7 +9,7 @@ wrap(){ # $1 src $2 out $3 title $4 color
    [ -n "$5" ] && echo "$5"
    echo "$HEAD_RESET</head><body>"; cat "$1"; echo '</body></html>'; } > "$2"
 }
-wrap lima.html site/index.html "Lima" "#ECE8DF" '<link rel="manifest" href="manifest.json"><link rel="apple-touch-icon" href="apple-touch-icon.png?v=1"><link rel="icon" href="favicon.png?v=1">'
+wrap lima.html site/index.html "Lima" "#ECE8DF" '<link rel="manifest" href="manifest.json"><link rel="apple-touch-icon" href="apple-touch-icon.png?v=2"><link rel="icon" href="favicon.png?v=2">'
 wrap ../qg/qg.html site/apps/qg.html "QG" "#2A2D2F"
 wrap ../relais/relais.html site/apps/champion.html "Champion" "#0F0D12"
 wrap ../frequence/frequence.html site/apps/frequence.html "Fréquence" "#0D1410"

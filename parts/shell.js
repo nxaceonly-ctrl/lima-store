@@ -31,7 +31,7 @@ function renderStore(){
  grid+='<button class="app folder" data-folder="1"><span class="ic"><i>'+ICON.bastion+'</i><i>'+ICON.mafia+'</i><i>'+ICON.studio+'</i></span><b>Tycoon</b></button>';
  var mineGrid=mine.map(myTile).join("")+(editMode?"":'<button class="app" data-add="1"><span class="ic addic">+</span><b>Ajouter</b></button>');
  var list=APPS.map(function(a){return '<button class="row" data-app="'+a.id+'"><span class="ic">'+ICON[a.id]+'</span><span class="t"><b>'+a.name+'</b><small>'+a.tag+'</small></span><span class="get">Ouvrir</span></button>'}).join("");
- el.innerHTML='<div class="top"><div><div class="eyebrow">'+hello+' Seven · '+d.toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long"})+'</div><div class="word">Lima <i>Store</i></div></div><div class="mono-badge" aria-hidden="true">L</div></div><div class="rule"></div>'
+ el.innerHTML='<div class="top"><div><div class="eyebrow">'+hello+' Seven · '+d.toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long"})+'</div><div class="word">Lima <i>Store</i></div></div><div class="mono-badge" aria-hidden="true">'+limaLogo()+'</div></div><div class="rule"></div>'
   +featHTML
   +'<div class="sec"><h3>Mes créations</h3><span>'+(APPS.length+3)+' apps · 1 dossier</span></div><div class="grid">'+grid+'</div>'
   +'<div class="sec"><h3>Mon téléphone</h3>'+(mine.length?'<button class="edit-link" data-edit="1">'+(editMode?"Terminé":"Modifier")+'</button>':'<span>tes autres apps</span>')+'</div><div class="grid">'+mineGrid+'</div>'
@@ -141,7 +141,23 @@ document.addEventListener("visibilitychange",function(){if(!cur)return;if(docume
 window.addEventListener("pagehide",function(){if(cur)gsave(cur,S)});
 window.addEventListener("resize",function(){if(!cur){var b=$(".feat");drawFeat(b?b.dataset.game:"bastion")}});
 
+/* ---------- LOGO + INTRO ---------- */
+function limaLogo(bg){var c=[[0,0,"#7D8CFF"],[0,1],[0,2],[1,2],[2,2]];return '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">'+(bg?'<rect width="100" height="100" fill="'+bg+'"/>':"")+c.map(function(t){return '<rect x="'+(18+t[0]*23)+'" y="'+(18+t[1]*23)+'" width="18" height="18" rx="4.5" fill="'+(t[2]||"#ECE8DF")+'"/>'}).join("")+'<rect x="64" y="18" width="18" height="18" rx="4.5" fill="none" stroke="#ECE8DF" stroke-opacity=".28" stroke-width="1.5" stroke-dasharray="3 3"/></svg>'}
+function playIntro(){
+ var reduce=false;try{reduce=matchMedia("(prefers-reduced-motion: reduce)").matches}catch(e){}
+ if(reduce||GAMES[location.hash.slice(1)])return;
+ var L={0:"c",3:1,6:1,7:1,8:1},h='<div id="intro" role="presentation"><div class="ibox"><div class="ig">';
+ for(var i=0;i<9;i++){var cls=L[i]?(L[i]==="c"?"it c":"it"):"it no";h+='<i class="'+cls+'" style="--d:'+(80+i*70)+'ms;--x:'+Math.round(rand(-140,140))+'px;--y:'+Math.round(rand(-260,-80))+'px;--r:'+Math.round(rand(-90,90))+'deg"></i>'}
+ h+='</div><div class="iw">'+"Lima Store".split("").map(function(ch,k){return '<span style="--d:'+(1350+k*45)+'ms"'+(k>4?' class="s"':"")+'>'+(ch===" "?"&nbsp;":ch)+'</span>'}).join("")+'</div><div class="itag">Tes créations · Tes apps · Tes jeux</div></div><div class="ihint">Touche pour passer</div></div>';
+ document.body.insertAdjacentHTML("beforeend",h);
+ var el=document.getElementById("intro");
+ el.addEventListener("click",function(){el.classList.add("skip")});
+ el.addEventListener("animationend",function(e){if(e.target===el&&/introOut/.test(e.animationName))el.remove()});
+ setTimeout(function(){if(el.parentNode)el.remove()},6000);
+}
+
 renderStore();
+playIntro();
 var h0=location.hash.slice(1);if(GAMES[h0])openGame(h0,true);
 })();
 </script>
