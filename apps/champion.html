@@ -1,0 +1,258 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0F0D12"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="Champion">
+<style>*,*::before,*::after{box-sizing:border-box}:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,-apple-system,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style></head><body>
+<title>Champion</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Antonio:wght@300;700&family=Spectral:ital,wght@0,400;1,400;1,600&display=swap">
+<style>
+/* Layout: a cinema frame. Animated canvas fills the screen, letterbox bars top and bottom; subtitles and choices live in the bottom bar. */
+:root{
+  --black:#07080b;      /* letterbox */
+  --bone:#efe6d4;       /* subtitles */
+  --bone-soft:rgba(239,230,212,.6);
+  --ember:#ff9a4d;      /* accent: the courier's lamp */
+  --line:rgba(239,230,212,.22);
+  --title:"Antonio","Arial Narrow",Impact,sans-serif;
+  --sub:"Spectral",Georgia,serif;
+  color-scheme:dark;
+}
+html,body{height:100%}
+[hidden]{display:none!important}
+body{background:var(--black);color:var(--bone);font-family:var(--sub);overflow:hidden}
+.film{position:relative;height:100%;max-width:520px;margin:0 auto;background:var(--black);display:flex;flex-direction:column}
+.bar-top{flex:0 0 auto;height:52px;display:flex;align-items:center;justify-content:space-between;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));font-family:var(--title);font-size:13px;letter-spacing:.2em;text-transform:uppercase;color:var(--bone-soft)}
+.screen{position:relative;flex:1 1 auto;min-height:0;cursor:pointer}
+#cv{position:absolute;inset:0;width:100%;height:100%;display:block}
+.bar-bot{flex:0 0 auto;min-height:190px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:14px calc(18px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:12px}
+.subt{font-size:19px;line-height:1.45;font-style:italic;min-height:3em;text-wrap:balance}
+.subt .who{font-style:normal;font-family:var(--title);font-size:13px;letter-spacing:.18em;text-transform:uppercase;color:var(--ember);display:block;margin-bottom:2px}
+.tap{font-family:var(--title);font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--bone-soft)}
+.choices{display:flex;flex-direction:column;gap:8px}
+.choice{text-align:left;border:1px solid var(--line);background:rgba(239,230,212,.05);color:var(--bone);border-radius:4px;padding:12px 14px;font-family:var(--sub);font-size:17px;cursor:pointer;display:flex;gap:12px;align-items:baseline}
+.choice b{font-family:var(--title);font-weight:700;font-size:14px;letter-spacing:.12em;color:var(--ember)}
+.choice small{display:block;color:var(--bone-soft);font-size:14px}
+.choice:focus-visible,.go:focus-visible{outline:2px solid var(--ember);outline-offset:2px}
+.timer{height:3px;background:var(--line);border-radius:3px;overflow:hidden}
+.timer i{display:block;height:100%;background:var(--ember);width:100%}
+.titlecard{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:10px;text-align:center;padding:16px;pointer-events:none}
+.titlecard h1{font-family:var(--title);font-weight:700;font-size:clamp(48px,17vw,96px);letter-spacing:.08em;margin:0;line-height:.9;text-transform:uppercase}
+.titlecard p{margin:0;font-style:italic;font-size:17px;color:var(--bone-soft)}
+.titlecard .end{font-family:var(--title);font-size:13px;letter-spacing:.3em;text-transform:uppercase;color:var(--ember)}
+.go{border:0;background:var(--bone);color:var(--black);font-family:var(--title);font-weight:700;font-size:18px;letter-spacing:.2em;text-transform:uppercase;padding:14px;border-radius:4px;cursor:pointer}
+.found{display:flex;gap:6px;flex-wrap:wrap}
+.found span{font-family:var(--title);font-size:12px;letter-spacing:.12em;text-transform:uppercase;padding:4px 8px;border:1px solid var(--line);border-radius:3px;color:var(--bone-soft)}
+.found span.on{color:var(--ember);border-color:var(--ember)}
+</style>
+
+<div class="film">
+  <div class="bar-top"><span id="chap">Section 313</span><span id="clock"></span></div>
+  <div class="screen" id="screen">
+    <canvas id="cv" aria-hidden="true"></canvas>
+    <div class="titlecard" id="card">
+      <h1 id="card-h">Champion</h1>
+      <p id="card-p">Un court film de la section 313. Tu choisis la fin.</p>
+    </div>
+  </div>
+  <div class="bar-bot">
+    <div class="subt" id="subt" aria-live="polite"></div>
+    <div class="choices" id="choices"></div>
+    <div class="tap" id="tap" hidden>Touche l'écran pour continuer</div>
+    <div id="menu" class="choices">
+      <button class="go" id="play">▶ Lancer le film</button>
+      <div class="found" id="found"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+const $=s=>document.querySelector(s);
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ================= STORY ================= */
+const ENDINGS={
+  aube:{t:'Café pour toute la 313',d:'La popote est arrivée, et personne n’est resté derrière.'},
+  temps:{t:'Juste à temps',d:'La section a son café. Mais Champion pense au camarade de la forêt.'},
+  pasSeul:{t:'Trop tard, pas seul',d:'La section est partie. Mais Champion a ramené un camarade.'},
+  tard:{t:'Popote froide',d:'La 313 est repartie sans café. Champion se promet que ça n’arrivera plus.'}
+};
+const S={
+  crete:{chap:'I · Le bivouac',clock:'19:40',draw:'crest',lines:[
+    ['','ENSOA, Saint-Maixent. Compagnie 31, section 313.'],
+    ['','Troisième jour de terrain. La section est épuisée.'],
+    ['Chef de section','Popotier ! Ravitaillement au point de regroupement avant l’aube. La 313 compte sur toi.'],
+    ['','L’EVSO Poey, que toute la section appelle Champion, charge la popote : thermos de café, rations, chocolat.'],
+    ['Champion','La 313 aura son café. Parole de popotier.'],
+    ['','Le point de regroupement est de l’autre côté de la vallée.']],
+    q:[{k:'A',l:'Prendre la route',s:'Rapide, mais à découvert.',go:'pont',fx:{}},
+       {k:'B',l:'Couper par la forêt',s:'Lent, mais caché.',go:'foret',fx:{late:1}}]},
+  pont:{chap:'II · Le pont',clock:'23:10',draw:'bridge',lines:[
+    ['','La route mène au vieux pont de pierre.'],
+    ['','Au milieu, il manque trois mètres. L’eau gronde en dessous.'],
+    ['Champion','Avec quinze kilos de popote sur le dos… Ça se tente ?'],
+    ['','Un peu plus bas, la rivière s’élargit. Il y a peut-être un gué.']],
+    q:[{k:'A',l:'Sauter le trou',s:'Tu gagnes du temps. Si tu réussis.',go:'saut',fx:{}},
+       {k:'B',l:'Descendre au gué',s:'Plus sûr. Plus long.',go:'plaine',fx:{late:1},after:[['','L’eau glacée monte jusqu’à la taille. Champion lève le sac de popote au-dessus de sa tête.']]}]},
+  saut:{chap:'II · Le pont',clock:'23:18',draw:'jump',lines:[
+    ['','Champion prend son élan…'],
+    ['','Il touche l’autre bord. Le thermos a tenu. La lampe, elle, tombe dans le noir.'],
+    ['Champion','Tant que le café est sauf…']],
+    auto:'plaine',fx:{lamp:false}},
+  foret:{chap:'II · La forêt',clock:'00:35',draw:'forest',lines:[
+    ['','Sous les arbres, la pluie fait un bruit de radio cassée.'],
+    ['','Quelque chose bouge contre un tronc.'],
+    ['Voix','Champion ? C’est toi ? Ma cheville a lâché…'],
+    ['','Un camarade de la 313, perdu depuis la dernière marche.']],
+    q:[{k:'A',l:'L’aider à marcher',s:'Vous irez deux fois moins vite.',go:'plaine',fx:{late:1,help:true},after:[['Le camarade','Merci, Champion. Je te dois un café.'],['Champion','C’est moi le popotier. Tu me dois rien.'],['','Il passe un bras sur son épaule. Ils repartent.']]},
+       {k:'B',l:'Lui laisser du chocolat et continuer',s:'Tu promets de revenir avec du renfort.',go:'plaine',fx:{},after:[['Champion','Garde le chocolat. Je reviens, promis.'],['','Champion ne se retourne pas.']]}]},
+  plaine:{chap:'III · Le regroupement',clock:'05:20',draw:'plain',lines:[
+    ['','La plaine. Les lumières de la 313, enfin, au loin.'],
+    ['','Une fusée éclairante monte dans le ciel. La section repart dans dix minutes.'],
+    ['','Chargé comme il est, Champion n’y sera pas à temps. Sauf si…']],
+    q:[{k:'A',l:'Courir de toutes ses forces',s:'Ça passe si tu n’as pas trop de retard.',go:'END_run',fx:{}},
+       {k:'B',l:'Prévenir en morse avec la lampe',s:'Il te faut encore la lampe.',go:'END_lamp',fx:{},need:'lamp'}]}
+};
+
+/* ================= STATE ================= */
+let st,scene,lineI,mode='menu',choiceT=0,choiceDur=12;
+let found={};try{found=JSON.parse(localStorage.getItem('champion-fins')||'{}')||{}}catch(_){}
+function showFound(){const f=$('#found');f.innerHTML='';Object.entries(ENDINGS).forEach(([k,v])=>{const s=document.createElement('span');s.className=found[k]?'on':'';s.textContent=found[k]?v.t:'Fin ?';f.appendChild(s)});
+  const n=Object.keys(found).length;const p=document.createElement('span');p.textContent=n+'/4 fins';f.prepend(p)}
+showFound();
+
+function begin(){st={late:0,lamp:true,help:false};$('#menu').hidden=true;$('#card').hidden=true;audio();play('crete')}
+function play(id,extraLines){scene=id;const sc=S[id];$('#chap').textContent=sc.chap;$('#clock').textContent=sc.clock;
+  queue=(extraLines||[]).concat(sc.lines);lineI=0;sceneT=0;mode='lines';$('#choices').innerHTML='';showLine()}
+let queue=[],sceneT=0;
+function showLine(){const [who,txt]=queue[lineI];$('#subt').innerHTML=(who?`<span class="who">${who}</span>`:'')+txt;$('#tap').hidden=false}
+function advance(){if(mode!=='lines')return;lineI++;
+  if(lineI<queue.length)return showLine();
+  $('#tap').hidden=true;const sc=S[scene];
+  if(sc.auto){Object.assign(st,sc.fx||{});return play(sc.auto)}
+  if(pendingNext){const n=pendingNext;pendingNext=null;return n()}
+  askChoice()}
+let pendingNext=null;
+function askChoice(){mode='choice';const sc=S[scene],box=$('#choices');box.innerHTML='';
+  sc.q.forEach(o=>{const b=document.createElement('button');b.className='choice';const ok=!o.need||st[o.need];
+    b.innerHTML=`<b>${o.k}</b><span>${o.l}<small>${ok?o.s:'Tu n’as plus ta lampe.'}</small></span>`;b.disabled=!ok;if(!ok)b.style.opacity=.4;
+    b.onclick=()=>pick(o);box.appendChild(b)});
+  const tm=document.createElement('div');tm.className='timer';tm.innerHTML='<i id="tbar"></i>';box.appendChild(tm);choiceT=0}
+function pick(o){$('#choices').innerHTML='';st.late+=(o.fx.late||0);if(o.fx.help)st.help=true;
+  if(o.go.startsWith('END'))return ending(o.go);
+  if(o.after){queue=o.after;lineI=0;mode='lines';pendingNext=()=>play(o.go);return showLine()}
+  play(o.go)}
+function ending(how){let key;
+  const arrived= how==='END_lamp' ? true : st.late<=1;
+  if(arrived)key=st.help?'aube':'temps';else key=st.help?'pasSeul':'tard';
+  const lines= how==='END_lamp'
+    ?[['','Champion lève sa lampe. Court, long. Court, court, long…'],['Chef de section','C’est le popotier ! Personne ne bouge, on l’attend !']]
+    :arrived?[['','Champion court, le thermos serré contre lui.'],['','Une sentinelle de la 313 le voit et crie : « La popote arrive ! »']]
+            :[['','Champion court. Trop tard.'],['','Les derniers phares de la compagnie 31 disparaissent derrière la colline.']];
+  if(key==='aube')lines.push(['Chef de section','Champion, meilleur popotier de la compagnie 31. Café pour toute la 313 !']);
+  if(key==='pasSeul')lines.push(['Le camarade','Ils nous attendront au prochain point. Merci, Champion.']);
+  if(key==='temps')lines.push(['','La 313 boit son café chaud. Champion, lui, repense à la forêt.']);
+  endKey=key;queue=lines;lineI=0;mode='lines';scene='__end';sceneT=0;$('#clock').textContent='06:02';$('#chap').textContent='IV · L’aube';
+  pendingNext=finale;showLine()}
+let endKey=null;
+S.__end={draw:'dawn'};
+function finale(){mode='menu';found[endKey]=1;try{localStorage.setItem('champion-fins',JSON.stringify(found))}catch(_){}
+  $('#subt').innerHTML='';$('#card').hidden=false;$('#card-h').textContent='Fin';
+  $('#card-p').innerHTML=`<span class="end">${ENDINGS[endKey].t}</span><br>${ENDINGS[endKey].d}`;
+  $('#play').textContent='↻ Revoir et changer la fin';$('#menu').hidden=false;showFound()}
+$('#play').onclick=begin;
+$('#screen').onclick=advance;$('.bar-bot').addEventListener('click',e=>{if(e.target.closest('button'))return;advance()});
+addEventListener('keydown',e=>{if(e.key===' '||e.key==='Enter'){if(mode==='lines'){e.preventDefault();advance()}}});
+
+/* ================= AUDIO (vent) ================= */
+let ac;function audio(){try{if(ac)return;ac=new (window.AudioContext||window.webkitAudioContext)();const len=ac.sampleRate*2,buf=ac.createBuffer(1,len,ac.sampleRate),d=buf.getChannelData(0);let l=0;
+  for(let i=0;i<len;i++){l=(l+.02*(Math.random()*2-1))/1.02;d[i]=l*3}
+  const src=ac.createBufferSource();src.buffer=buf;src.loop=true;const f=ac.createBiquadFilter();f.type='lowpass';f.frequency.value=500;const g=ac.createGain();g.gain.value=.12;src.connect(f).connect(g).connect(ac.destination);src.start()}catch(_){}}
+
+/* ================= DRAWING ================= */
+const cv=$('#cv'),c=cv.getContext('2d');let W,H,DPR;
+function fit(){DPR=Math.min(2,devicePixelRatio||1);W=cv.width=cv.clientWidth*DPR;H=cv.height=cv.clientHeight*DPR}
+addEventListener('resize',fit);fit();
+const R=(s=>()=>(s=(s*16807)%2147483647)/2147483647)(42);
+const STARS=Array.from({length:120},()=>[R(),R()*.7,R()*1.3+.3,R()*6]);
+const TREES=Array.from({length:40},()=>[R(),R(),.6+R()*.6]);
+const RAIN=Array.from({length:160},()=>[R(),R(),.6+R()*.8]);
+function sky(stops){const g=c.createLinearGradient(0,0,0,H);stops.forEach(([o,col])=>g.addColorStop(o,col));c.fillStyle=g;c.fillRect(0,0,W,H)}
+function stars(a,t){STARS.forEach(([x,y,r,p])=>{c.fillStyle=`rgba(239,230,212,${a*(.4+.5*Math.sin(t+p)**2)})`;c.beginPath();c.arc(x*W,y*H,r*DPR,0,7);c.fill()})}
+function ridge(base,amp,f,seed,col,off){c.fillStyle=col;c.beginPath();c.moveTo(0,H);
+  for(let x=0;x<=W+8;x+=W/60){const X=x/W+off;c.lineTo(x,H*base-(Math.sin(X*f+seed)*.6+Math.sin(X*f*2.3+seed*3)*.3+Math.sin(X*f*5.1+seed)*.1)*amp*H)}c.lineTo(W,H);c.fill()}
+function disc(x,y,r,col){c.fillStyle=col;c.beginPath();c.arc(x,y,r,0,7);c.fill()}
+function glow(x,y,r,col,a){const g=c.createRadialGradient(x,y,0,x,y,r);g.addColorStop(0,col.replace('A',a));g.addColorStop(1,col.replace('A',0));c.fillStyle=g;c.fillRect(x-r,y-r,r*2,r*2)}
+// the courier: a silhouette with a walking cycle
+function person(x,y,s,t,col,opts={}){const w=opts.walk===false?0:Math.sin(t*6);c.save();c.translate(x,y);c.fillStyle=col;c.strokeStyle=col;c.lineCap='round';
+  c.lineWidth=s*.13;
+  c.beginPath();c.moveTo(0,-s*.55);c.lineTo(w*s*.22,0);c.moveTo(0,-s*.55);c.lineTo(-w*s*.22,0);c.stroke(); // legs
+  c.beginPath();c.moveTo(0,-s*.55);c.lineTo(s*.03,-s*1.05);c.stroke(); // body
+  c.fillRect(-s*.2,-s*1.02,s*.18,s*.32); // backpack
+  c.beginPath();c.moveTo(s*.03,-s*.95);c.lineTo(-w*s*.2+s*.05,-s*.6);c.stroke(); // arm
+  disc(s*.04,-s*1.18,s*.12,col);c.fillRect(-s*.1,-s*1.3,s*.3,s*.06); // head + cap brim
+  if(opts.lamp){c.beginPath();c.moveTo(s*.03,-s*.95);c.lineTo(s*.3,-s*1.25);c.stroke();glow(s*.32,-s*1.3,s*(opts.big||.5),'rgba(255,154,77,A)',opts.on===false?0:.9);disc(s*.32,-s*1.3,s*.05,'#ffd2a8')}
+  c.restore()}
+
+const DRAW={
+ crest(t,T){sky([[0,'#2a2340'],[.45,'#a2516a'],[.75,'#f08a4b'],[1,'#ffc785']]);
+   const sy=H*(.62+Math.min(T/40,1)*.08);glow(W*.5,sy,W*.6,'rgba(255,190,110,A)',.6);disc(W*.5,sy,W*.09,'#ffe0b0');
+   stars(Math.min(T/30,1)*.5,t);ridge(.7,.09,3,1,'#6a3a55',T*.004);ridge(.82,.07,4,5,'#3a2238',T*.01);
+   ridge(.94,.05,2,9,'#160d18',T*.03);
+   person(W*.42,H*.885,H*.12,t,'#160d18',{lamp:false});
+   // dead radio antenna
+   c.strokeStyle='#160d18';c.lineWidth=DPR*2;c.beginPath();c.moveTo(W*.4,H*.78);c.lineTo(W*.37,H*.7);c.stroke()},
+ bridge(t,T,noP){sky([[0,'#060a18'],[.7,'#162344'],[1,'#22325a']]);stars(.8,t);disc(W*.75,H*.18,W*.05,'#efe6d4');
+   ridge(.6,.06,3,2,'#141c33',0);
+   // river
+   c.fillStyle='#0c142a';c.fillRect(0,H*.8,W,H*.2);for(let i=0;i<30;i++){const y=H*(.82+(i%10)*.018),x=((i*137+t*40*DPR)%(W+80))-40;c.fillStyle='rgba(239,230,212,.12)';c.fillRect(x,y,W*.06,DPR)}
+   // bridge with gap
+   c.fillStyle='#0a0f1e';c.fillRect(0,H*.66,W*.42,H*.04);c.fillRect(W*.58,H*.66,W*.42,H*.04);
+   [.1,.3,.7,.9].forEach(p=>c.fillRect(W*p-W*.025,H*.7,W*.05,H*.12));
+   if(!noP)person(Math.min(W*.36,W*.05+T*W*.03),H*.66,H*.1,t,'#0a0f1e',{lamp:true,walk:T*W*.03<W*.31})},
+ jump(t,T){DRAW.bridge(t,99,true);const p=Math.min(T/1.6,1);
+   const x=W*(.36+p*.28),y=H*.66-Math.sin(p*Math.PI)*H*.12;
+   person(x,y,H*.1,t,'#0a0f1e',{lamp:p<.5,walk:p>=1});
+   if(p>.5){const q=Math.min((p-.5)*2,1);glow(W*.5,H*(.62+q*.25),W*.06,'rgba(255,154,77,A)',.8*(1-q))}},
+ forest(t,T){sky([[0,'#04080a'],[1,'#0f1c1a']]);
+   TREES.forEach(([x,d,s],i)=>{if(d<.5){const X=((x+T*.004)%1.2-.1)*W;c.fillStyle='#0f1d1b';c.fillRect(X,0,W*.03*s,H)}});
+   ridge(.88,.03,3,3,'#071010',0);
+   // wounded figure by a tree
+   c.fillStyle='#030606';c.fillRect(W*.66,0,W*.06,H*.9);
+   c.save();c.translate(W*.63,H*.87);c.fillStyle='#030606';c.beginPath();c.ellipse(0,-H*.04,H*.03,H*.05,-.3,0,7);c.fill();disc(H*.005,-H*.1,H*.018,'#030606');c.fillRect(-H*.08,-H*.015,H*.09,H*.015);c.restore();
+   person(Math.min(W*.5,W*.05+T*W*.025),H*.885,H*.11,t,'#030606',{lamp:true,big:.9,walk:T*W*.025<W*.45});
+   TREES.forEach(([x,d,s])=>{if(d>=.5){const X=((x+T*.01)%1.2-.1)*W;c.fillStyle='#020404';c.fillRect(X,0,W*.06*s,H)}});
+   c.strokeStyle='rgba(160,190,200,.28)';c.lineWidth=DPR;c.beginPath();
+   RAIN.forEach(([x,y,s])=>{const Y=((y+t*1.4*s)%1)*H,X=x*W;c.moveTo(X,Y);c.lineTo(X-3*DPR,Y+14*DPR*s)});c.stroke()},
+ plain(t,T){sky([[0,'#0f1530'],[.55,'#33355c'],[.85,'#7a5a6e'],[1,'#c98a6a']]);stars(.35,t);
+   ridge(.72,.04,2,4,'#25223a',0);
+   // camp lights
+   for(let i=0;i<6;i++){const x=W*(.62+i*.035),a=.5+.5*Math.sin(t*2+i);glow(x,H*.71,W*.03,'rgba(255,200,120,A)',a*.8);disc(x,H*.71,DPR*1.6,'#ffd9a0')}
+   // flare
+   const fp=(T%9)/9;if(T>3){const fy=H*(.7-fp*.55);glow(W*.7,fy,W*.25,'rgba(255,120,90,A)',.5*(1-fp));disc(W*.7,fy,DPR*3,'#ffd0c0')}
+   ridge(.92,.03,3,8,'#0d0c18',T*.01);
+   person(W*.3,H*.905,H*.11,t,'#0d0c18',{lamp:st&&st.lamp,walk:false,on:st&&st.lamp});
+   if(st&&st.help)person(W*.23,H*.905,H*.105,t+1,'#0d0c18',{walk:false})},
+ dawn(t,T){const k=Math.min(T/8,1);sky([[0,`rgb(${40+k*80},${50+k*90},${90+k*90})`],[.7,`rgb(${180+k*60},${120+k*70},${110+k*40})`],[1,'#ffd8a0']]);
+   glow(W*.5,H*(.86-k*.1),W*.7,'rgba(255,210,150,A)',.5+k*.3);disc(W*.5,H*(.86-k*.1),W*.07,'#fff0d0');
+   ridge(.8,.05,2,4,'#5a4a5a',0);ridge(.93,.03,3,8,'#2a2030',0);
+   const lit=endKey==='aube'||endKey==='temps';
+   if(lit){c.fillStyle='#2a2030';c.fillRect(W*.62,H*.85,W*.16,H*.06);disc(W*.65,H*.915,H*.015,'#2a2030');disc(W*.75,H*.915,H*.015,'#2a2030')}
+   person(W*.42,H*.93,H*.1,t,'#2a2030',{walk:false});
+   if(endKey==='aube'||endKey==='pasSeul')person(W*.36,H*.93,H*.1,t,'#2a2030',{walk:false})},
+ title(t){sky([[0,'#05060a'],[.8,'#101528'],[1,'#2a2238']]);stars(.7,t);ridge(.85,.05,3,1,'#0a0c16',t*.003);ridge(.95,.03,2,6,'#05060a',t*.008);
+   person(W*.5,H*.95,H*.09,t,'#05060a',{lamp:true,big:1.2})}
+};
+let last=performance.now();
+function frame(now){const dt=Math.min(.05,(now-last)/1000);last=now;const t=reduce?0:now/1000;
+  if(mode!=='menu'||scene)sceneT+=reduce?0:dt;
+  const key=mode==='menu'&&!endKey?'title':scene==='__end'||(mode==='menu'&&endKey)?'dawn':S[scene].draw;
+  DRAW[key](t,sceneT);
+  // vignette
+  const v=c.createRadialGradient(W/2,H/2,Math.min(W,H)*.3,W/2,H/2,Math.max(W,H)*.75);v.addColorStop(0,'rgba(0,0,0,0)');v.addColorStop(1,'rgba(0,0,0,.55)');c.fillStyle=v;c.fillRect(0,0,W,H);
+  if(mode==='choice'){choiceT+=dt;const b=document.getElementById('tbar');if(b)b.style.width=Math.max(0,100-choiceT/choiceDur*100)+'%';
+    if(choiceT>choiceDur){const sc=S[scene];const ok=sc.q.filter(o=>!o.need||st[o.need]);pick(ok[ok.length-1])}}
+  requestAnimationFrame(frame)}
+requestAnimationFrame(frame);
+})();
+</script>
+</body></html>

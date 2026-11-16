@@ -1,0 +1,213 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0D1410"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="Fréquence">
+<style>*,*::before,*::after{box-sizing:border-box}:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,-apple-system,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style></head><body>
+<title>Fréquence</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;800&family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;600&display=swap">
+<style>
+/* Layout: one phone column. Top = live 2D night scene (the "film"), bottom = the radio set you operate. */
+:root{
+  --night:#0b1220;      /* sky / page ground */
+  --olive:#2c3324;      /* radio casing */
+  --olive-2:#3b4430;
+  --amber:#ffb547;      /* display + accent: radio lamp */
+  --amber-dim:rgba(255,181,71,.18);
+  --paper:#e9e4d6;      /* text */
+  --paper-soft:rgba(233,228,214,.65);
+  --red:#ff5a4a;
+  --ok:#8fd18a;
+  --display:"Big Shoulders Display",Impact,"Arial Narrow",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+  --body:"IBM Plex Sans",system-ui,sans-serif;
+  color-scheme:dark;
+}
+html,body{height:100%}
+[hidden]{display:none!important}
+body{background:var(--night);color:var(--paper);font-family:var(--body);overflow:hidden}
+.app{height:100%;max-width:440px;margin:0 auto;display:flex;flex-direction:column;background:var(--night)}
+.scene{position:relative;flex:1 1 42%;min-height:200px}
+#scene{position:absolute;inset:0;width:100%;height:100%;display:block}
+.cap{position:absolute;left:max(16px,env(safe-area-inset-left,0px));right:max(16px,env(safe-area-inset-right,0px));top:14px;display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.title{font-family:var(--display);font-weight:800;font-size:34px;letter-spacing:.02em;line-height:.9;text-transform:uppercase}
+.title small{display:block;font-family:var(--mono);font-weight:400;font-size:11px;letter-spacing:.12em;color:var(--paper-soft);margin-top:6px}
+.lives{font-family:var(--mono);font-size:13px;color:var(--amber);letter-spacing:.1em}
+.subtitle{position:absolute;left:max(16px,env(safe-area-inset-left,0px));right:max(16px,env(safe-area-inset-right,0px));bottom:12px;font-family:var(--mono);font-size:13px;line-height:1.45;color:var(--paper);text-shadow:0 1px 4px #000;min-height:2.9em}
+.radio{flex:0 0 auto;background:linear-gradient(var(--olive-2),var(--olive));border-top:2px solid #0006;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:14px calc(16px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:12px}
+.lcd{background:#120d05;border:2px solid #000;border-radius:8px;padding:10px 12px;box-shadow:inset 0 0 18px var(--amber-dim);font-family:var(--mono);color:var(--amber);display:flex;flex-direction:column;gap:6px}
+.lcd .top{display:flex;justify-content:space-between;font-size:11px;letter-spacing:.12em;opacity:.8}
+.signal{font-size:22px;font-weight:600;letter-spacing:.06em;min-height:1.4em;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.lamp{width:16px;height:16px;border-radius:50%;background:#3a2a10;flex:none;transition:background .05s,box-shadow .05s}
+.lamp.on{background:var(--amber);box-shadow:0 0 14px var(--amber)}
+.msg{font-size:15px;letter-spacing:.2em;word-break:break-word;color:var(--paper)}
+.msg .hole{color:#5a4a2a}
+.msg .new{color:var(--amber)}
+.answers{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.key{font-family:var(--mono);font-weight:600;font-size:22px;padding:14px 0;border-radius:8px;border:0;background:var(--paper);color:#1c1a14;box-shadow:0 4px 0 #8f8a7b;cursor:pointer}
+.key:active{transform:translateY(3px);box-shadow:0 1px 0 #8f8a7b}
+.key:focus-visible,.btn:focus-visible,.ghost:focus-visible{outline:3px solid var(--amber);outline-offset:2px}
+.key.good{background:var(--ok)}
+.key.bad{background:var(--red);color:#fff}
+.key.word{font-size:13px}
+.row{display:flex;gap:8px}
+.btn{flex:1;font-family:var(--display);font-weight:800;font-size:22px;letter-spacing:.06em;text-transform:uppercase;padding:12px;border-radius:8px;border:0;background:var(--amber);color:#1c1405;cursor:pointer}
+.ghost{flex:none;font-family:var(--mono);font-size:13px;padding:10px 12px;border-radius:8px;border:1px solid #0008;background:#0003;color:var(--paper);cursor:pointer}
+.nights{display:flex;flex-direction:column;gap:8px}
+.night{display:flex;justify-content:space-between;align-items:center;gap:10px;text-align:left;padding:12px;border-radius:8px;border:1px solid #0008;background:#0003;color:var(--paper);font-family:var(--body);cursor:pointer}
+.night b{font-family:var(--display);font-size:20px;letter-spacing:.04em;text-transform:uppercase;font-weight:800}
+.night span{display:block;font-size:13px;color:var(--paper-soft)}
+.night em{font-style:normal;font-family:var(--mono);font-size:12px;color:var(--amber);white-space:nowrap}
+.night[disabled]{opacity:.45;cursor:default}
+.hint{font-size:12px;color:var(--paper-soft);font-family:var(--mono)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="app">
+  <div class="scene">
+    <canvas id="scene" aria-hidden="true"></canvas>
+    <div class="cap">
+      <div class="title" id="title">Fréquence<small id="post">POSTE ÉCHO-7 · 03:12</small></div>
+      <div class="lives" id="lives"></div>
+    </div>
+    <div class="subtitle" id="sub">Nuit calme sur la colline. La radio grésille. Choisis ta garde.</div>
+  </div>
+
+  <div class="radio">
+    <!-- menu -->
+    <div id="menu" class="nights"></div>
+
+    <!-- jeu -->
+    <div id="game" hidden>
+      <div class="lcd">
+        <div class="top"><span id="mode">ALPHABET OTAN</span><span id="count">0/0</span></div>
+        <div class="signal"><span class="lamp" id="lamp"></span><span id="signal">—</span></div>
+        <div class="msg" id="msg"></div>
+      </div>
+      <div style="height:12px"></div>
+      <div class="answers" id="answers"></div>
+      <div style="height:12px"></div>
+      <div class="row">
+        <button class="ghost" id="replay">↻ Réécouter</button>
+        <button class="ghost" id="quit">Quitter la garde</button>
+      </div>
+    </div>
+
+    <!-- fin -->
+    <div id="end" hidden>
+      <div class="lcd">
+        <div class="top"><span>MESSAGE DÉCODÉ</span><span id="end-score"></span></div>
+        <div class="msg" id="end-msg" style="font-size:20px"></div>
+      </div>
+      <div style="height:12px"></div>
+      <div class="row"><button class="btn" id="back">Retour au poste</button></div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+const $=s=>document.querySelector(s);
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const NATO={A:'Alfa',B:'Bravo',C:'Charlie',D:'Delta',E:'Echo',F:'Foxtrot',G:'Golf',H:'Hotel',I:'India',J:'Juliett',K:'Kilo',L:'Lima',M:'Mike',N:'November',O:'Oscar',P:'Papa',Q:'Quebec',R:'Romeo',S:'Sierra',T:'Tango',U:'Uniform',V:'Victor',W:'Whiskey',X:'X-ray',Y:'Yankee',Z:'Zulu'};
+const MORSE={A:'.-',B:'-...',C:'-.-.',D:'-..',E:'.',F:'..-.',G:'--.',H:'....',I:'..',J:'.---',K:'-.-',L:'.-..',M:'--',N:'-.',O:'---',P:'.--.',Q:'--.-',R:'.-.',S:'...',T:'-',U:'..-',V:'...-',W:'.--',X:'-..-',Y:'-.--',Z:'--..'};
+const NIGHTS=[
+  {id:1,name:'Nuit 1 · Alphabet',desc:'Le QG épelle en alphabet OTAN.',mode:'nato',msg:'CONVOI A L AUBE',
+   intro:'03:12. Le QG appelle Écho-7. Il épelle un message, lettre par lettre.',
+   outro:'Bien reçu. Le convoi passera au pied de la colline à l’aube. Tu peux dormir deux heures.'},
+  {id:2,name:'Nuit 2 · Morse',desc:'Une lampe clignote au loin.',mode:'morse',msg:'SOS PONT NORD',
+   intro:'02:47. Une lumière clignote de l’autre côté de la vallée. Point court, trait long.',
+   outro:'Une patrouille est bloquée au pont nord. Tu transmets au QG. Les secours partent.'},
+  {id:3,name:'Nuit 3 · Brouillage',desc:'OTAN, morse et lettre inversée mélangés.',mode:'mix',msg:'RETOUR BASE',
+   intro:'04:05. Le signal est brouillé. Les codes changent à chaque lettre. Reste concentré.',
+   outro:'Fin de mission. Le camion vient te chercher. Trois nuits, zéro message perdu.'}
+];
+let done={};try{done=JSON.parse(localStorage.getItem('freq-done')||'{}')||{}}catch(_){}
+
+// ---------- audio ----------
+let ac=null;
+function beep(ms,when){if(!ac)return;const o=ac.createOscillator(),g=ac.createGain();o.frequency.value=640;o.type='sine';
+  g.gain.setValueAtTime(0,when);g.gain.linearRampToValueAtTime(.18,when+.005);g.gain.setValueAtTime(.18,when+ms/1000-.01);g.gain.linearRampToValueAtTime(0,when+ms/1000);
+  o.connect(g).connect(ac.destination);o.start(when);o.stop(when+ms/1000+.02)}
+function ensureAudio(){try{if(!ac)ac=new (window.AudioContext||window.webkitAudioContext)();if(ac.state==='suspended')ac.resume()}catch(_){ac=null}}
+let playToken=0;
+function playMorse(code){const tok=++playToken,U=110;let t=0;const lamp=$('#lamp');const base=ac?ac.currentTime+.05:0;
+  [...code].forEach(sym=>{const d=sym==='.'?U:U*3;const start=t;
+    if(ac)beep(d,base+start/1000);
+    setTimeout(()=>{if(tok===playToken){lamp.classList.add('on');flash=1}},start);
+    setTimeout(()=>{if(tok===playToken)lamp.classList.remove('on')},start+d);
+    t+=d+U});}
+
+// ---------- scene ----------
+const cv=$('#scene'),ctx=cv.getContext('2d');let W=0,H=0,flash=0;
+function fit(){const d=Math.min(2,devicePixelRatio||1);W=cv.width=cv.clientWidth*d;H=cv.height=cv.clientHeight*d}
+addEventListener('resize',fit);fit();
+const stars=Array.from({length:90},(_,i)=>({x:Math.random(),y:Math.random()*.6,r:Math.random()*1.4+.3,p:Math.random()*6}));
+function hill(y0,amp,seed,col){ctx.fillStyle=col;ctx.beginPath();ctx.moveTo(0,H);for(let x=0;x<=W;x+=W/40){ctx.lineTo(x,H*y0-Math.sin(x/W*3+seed)*amp*H-Math.sin(x/W*9+seed*2)*amp*.3*H)}ctx.lineTo(W,H);ctx.fill()}
+function draw(ts){const t=reduce?0:ts/1000;
+  const g=ctx.createLinearGradient(0,0,0,H);g.addColorStop(0,'#070b16');g.addColorStop(.7,'#16233a');g.addColorStop(1,'#26324a');ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+  stars.forEach(s=>{ctx.fillStyle=`rgba(233,228,214,${.35+.4*Math.sin(t*1.3+s.p)**2})`;ctx.beginPath();ctx.arc(s.x*W,s.y*H,s.r*(W/400),0,7);ctx.fill()});
+  // moon
+  ctx.fillStyle='#e9e4d6';ctx.beginPath();ctx.arc(W*.8,H*.2,W*.05,0,7);ctx.fill();ctx.fillStyle='#070b16';ctx.beginPath();ctx.arc(W*.82,H*.19,W*.045,0,7);ctx.fill();
+  // far valley + distant lamp (morse source)
+  hill(.62,.05,1,'#1b2638');
+  const lit=$('#lamp').classList.contains('on');
+  if(lit){const lx=W*.22,ly=H*.58;const rg=ctx.createRadialGradient(lx,ly,0,lx,ly,W*.08);rg.addColorStop(0,'rgba(255,181,71,.9)');rg.addColorStop(1,'rgba(255,181,71,0)');ctx.fillStyle=rg;ctx.fillRect(lx-W*.1,ly-W*.1,W*.2,W*.2)}
+  hill(.78,.06,4,'#121a28');
+  // antenna + tent on near hill
+  const ax=W*.7,ay=H*.74;ctx.strokeStyle='#0a0f18';ctx.lineWidth=W/200;ctx.beginPath();ctx.moveTo(ax,ay);ctx.lineTo(ax,ay-H*.32);ctx.stroke();
+  ctx.fillStyle=Math.sin(t*3)>.6?'#ff5a4a':'#5a1e1a';ctx.beginPath();ctx.arc(ax,ay-H*.32,W/120,0,7);ctx.fill();
+  hill(.9,.03,7,'#090e17');
+  const tx=W*.52,ty=H*.86,tw=W*.2;ctx.fillStyle='#1e2418';ctx.beginPath();ctx.moveTo(tx-tw/2,ty);ctx.lineTo(tx,ty-tw*.55);ctx.lineTo(tx+tw/2,ty);ctx.fill();
+  const glow=.5+.15*Math.sin(t*7)+(flash>0?.3:0);ctx.fillStyle=`rgba(255,181,71,${glow})`;ctx.beginPath();ctx.moveTo(tx-tw*.12,ty);ctx.lineTo(tx,ty-tw*.3);ctx.lineTo(tx+tw*.12,ty);ctx.fill();
+  flash=Math.max(0,flash-.05);
+  requestAnimationFrame(draw)}
+requestAnimationFrame(draw);
+
+// ---------- menu ----------
+function menu(){$('#menu').hidden=false;$('#game').hidden=true;$('#end').hidden=true;$('#lives').textContent='';
+  $('#sub').textContent='Nuit calme sur la colline. La radio grésille. Choisis ta garde.';
+  const m=$('#menu');m.innerHTML='';
+  NIGHTS.forEach((n,i)=>{const b=document.createElement('button');b.className='night';const open=i===0||done[NIGHTS[i-1].id];
+    b.disabled=!open;b.innerHTML=`<div><b>${n.name}</b><span>${n.desc}</span></div><em>${done[n.id]?'✓ '+done[n.id]+'/'+n.msg.replace(/ /g,'').length:open?'Prendre la garde':'Verrouillé'}</em>`;
+    b.onclick=()=>{ensureAudio();start(n)};m.appendChild(b)});
+  const h=document.createElement('p');h.className='hint';h.textContent='Astuce : monte le son pour entendre le morse.';m.appendChild(h);}
+
+// ---------- game ----------
+let N,letters,idx,lives,score,curMode;
+function start(n){N=n;letters=[...n.msg].map((c,i)=>({c,i})).filter(o=>o.c!==' ');idx=0;lives=3;score=0;
+  $('#menu').hidden=true;$('#game').hidden=false;$('#sub').textContent=n.intro;next();}
+function renderMsg(newI){$('#msg').innerHTML=[...N.msg].map((c,i)=>{if(c===' ')return '&nbsp;&nbsp;';const k=letters.findIndex(o=>o.i===i);
+  return k<idx?`<span class="${i===newI?'new':''}">${c}</span>`:'<span class="hole">_</span>'}).join('');
+  $('#count').textContent=idx+'/'+letters.length;$('#lives').textContent='SIGNAL '+'▮'.repeat(lives)+'▯'.repeat(3-lives);}
+function pickWrong(c){const pool=Object.keys(MORSE).filter(k=>k!==c);
+  if(curMode==='morse'){pool.sort((a,b)=>Math.abs(MORSE[a].length-MORSE[c].length)-Math.abs(MORSE[b].length-MORSE[c].length)+(Math.random()-.5)*2)}
+  else pool.sort(()=>Math.random()-.5);return pool.slice(0,3)}
+function next(){renderMsg(-1);
+  if(idx>=letters.length)return finish(true);
+  const c=letters[idx].c;
+  curMode=N.mode==='mix'?['nato','morse','reverse'][idx%3]:N.mode;
+  const opts=[c,...pickWrong(c)].sort(()=>Math.random()-.5);
+  $('#mode').textContent={nato:'ALPHABET OTAN',morse:'MORSE',reverse:'TROUVE LE MOT'}[curMode];
+  $('#replay').hidden=curMode!=='morse';
+  if(curMode==='nato')$('#signal').textContent=NATO[c].toUpperCase();
+  if(curMode==='morse'){$('#signal').textContent=MORSE[c].replace(/\./g,'·').replace(/-/g,'—').split('').join(' ');setTimeout(()=>playMorse(MORSE[c]),250)}
+  if(curMode==='reverse')$('#signal').textContent=c;
+  const a=$('#answers');a.innerHTML='';
+  opts.forEach(o=>{const b=document.createElement('button');b.className='key'+(curMode==='reverse'?' word':'');b.textContent=curMode==='reverse'?NATO[o]:o;
+    b.onclick=()=>answer(b,o===c,a);a.appendChild(b)});}
+function answer(b,ok,a){[...a.children].forEach(x=>x.disabled=true);
+  if(ok){b.classList.add('good');score++;idx++;flash=1;setTimeout(()=>{renderMsg(letters[idx-1].i);setTimeout(next,350)},250)}
+  else{b.classList.add('bad');lives--;renderMsg(-1);
+    if(navigator.vibrate)try{navigator.vibrate(120)}catch(_){}
+    if(lives<=0)return setTimeout(()=>finish(false),600);
+    setTimeout(()=>{b.classList.remove('bad');[...a.children].forEach(x=>x.disabled=false);b.disabled=true;b.style.opacity=.35},500)}}
+function finish(win){playToken++;$('#game').hidden=true;$('#end').hidden=false;
+  $('#end-msg').textContent=win?N.msg:'SIGNAL PERDU';$('#end-score').textContent=score+' LETTRES';
+  $('#sub').textContent=win?N.outro:'Trop d’erreurs. Le message s’est perdu dans le grésillement. Reprends la garde.';
+  if(win){done[N.id]=letters.length;try{localStorage.setItem('freq-done',JSON.stringify(done))}catch(_){}}}
+$('#replay').onclick=()=>{ensureAudio();if(curMode==='morse')playMorse(MORSE[letters[idx].c])};
+$('#quit').onclick=()=>{playToken++;menu()};
+$('#back').onclick=menu;
+menu();
+})();
+</script>
+</body></html>

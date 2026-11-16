@@ -1,0 +1,626 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#2A2D2F"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="QG">
+<style>*,*::before,*::after{box-sizing:border-box}:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,-apple-system,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style></head><body>
+<title>QG</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil+Display:wght@700;900&family=Saira:wght@400;500;600;700&family=Spectral:ital@1&display=swap">
+<style>
+/* Layout: one phone column of full-height screens (intro → hub → 4 games). Stencil type + hazard yellow on gunmetal. */
+:root{
+  --bg:#0f110e;          /* gunmetal ground */
+  --panel:#191c17;
+  --panel-2:#22261f;
+  --line:rgba(216,201,163,.16);
+  --sand:#d8c9a3;        /* text */
+  --sand-soft:rgba(216,201,163,.62);
+  --hazard:#f2c230;      /* accent: stencil yellow */
+  --foe:#e2553f;         /* enemy / danger */
+  --ally:#8fbf7a;        /* friendly / good */
+  --stencil:"Big Shoulders Stencil Display",Impact,"Arial Narrow",sans-serif;
+  --body:"Saira",system-ui,sans-serif;
+  --story:"Spectral",Georgia,serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--sand);font-family:var(--body);font-size:15px;overflow:hidden;-webkit-user-select:none;user-select:none}
+button{font-family:inherit;color:inherit}
+button:focus-visible{outline:2px solid var(--hazard);outline-offset:2px}
+.app{position:relative;height:100%;max-width:480px;margin:0 auto;background:var(--bg);overflow:hidden}
+.screen{position:absolute;inset:0;display:flex;flex-direction:column}
+.pad{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.top{flex:none;display:flex;align-items:center;justify-content:space-between;gap:10px;padding-block:12px}
+.back{border:1px solid var(--line);background:transparent;border-radius:6px;padding:7px 10px;font-weight:600;font-size:13px;letter-spacing:.06em;cursor:pointer}
+.gtitle{font-family:var(--stencil);font-weight:900;font-size:26px;letter-spacing:.04em;text-transform:uppercase;line-height:1}
+.meta{font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--sand-soft);text-align:right}
+.btn{border:0;border-radius:6px;background:var(--hazard);color:#15130a;font-family:var(--stencil);font-weight:900;font-size:20px;letter-spacing:.08em;text-transform:uppercase;padding:13px 16px;cursor:pointer}
+.btn.ghost{background:transparent;color:var(--sand);border:1px solid var(--line)}
+
+/* ---------- INTRO ---------- */
+#intro{background:#000;cursor:pointer}
+#intro canvas{width:100%;height:100%;display:block}
+#skip{position:absolute;right:max(16px,env(safe-area-inset-right,0px));bottom:calc(16px + env(safe-area-inset-bottom,0px));font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.35);background:none;border:0;cursor:pointer}
+
+/* ---------- HUB ---------- */
+#hub{overflow-y:auto}
+.hub-in{display:flex;flex-direction:column;gap:12px;padding-block:22px 28px}
+.logo{display:flex;align-items:flex-end;justify-content:space-between}
+.logo b{font-family:var(--stencil);font-weight:900;font-size:76px;line-height:.8;color:var(--hazard);letter-spacing:.02em}
+.logo span{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--sand-soft);text-align:right;line-height:1.5}
+.tile{position:relative;display:grid;grid-template-columns:64px 1fr;gap:14px;align-items:center;text-align:left;border:1px solid var(--line);background:var(--panel);border-radius:10px;padding:14px;cursor:pointer;overflow:hidden}
+.tile:active{background:var(--panel-2)}
+.tile canvas{width:64px;height:64px;border-radius:6px;background:#000}
+.tile h3{margin:0;font-family:var(--stencil);font-weight:900;font-size:26px;letter-spacing:.03em;text-transform:uppercase;line-height:1}
+.tile p{margin:4px 0 0;font-size:13px;color:var(--sand-soft);line-height:1.35}
+.tile .rec{display:inline-block;margin-top:6px;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--hazard)}
+.tile .tag{position:absolute;top:10px;right:12px;font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--sand-soft)}
+.foot{font-size:11px;color:var(--sand-soft);text-align:center;letter-spacing:.06em;display:flex;flex-direction:column;gap:8px;align-items:center}
+.link{background:none;border:0;color:var(--sand-soft);text-decoration:underline;font-size:12px;cursor:pointer}
+
+/* ---------- FRONT ---------- */
+.board{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;background:#0a0b09;padding:3px;border-radius:8px;border:1px solid var(--line)}
+.cell{position:relative;aspect-ratio:1;max-width:100%;border:0;border-radius:4px;background:#2b3022;padding:0;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.cell.forest{background:#1f3a22}
+.cell.forest::after{content:"";position:absolute;inset:22%;border-radius:50%;background:radial-gradient(#2f5a32,#1f3a22);opacity:.9}
+.cell.rock{background:#4a4a44;cursor:default}
+.cell.rock::after{content:"";position:absolute;inset:18% 14% 26%;background:#6a6a61;clip-path:polygon(20% 100%,0 55%,30% 0,75% 10%,100% 60%,80% 100%)}
+.cell.mv{box-shadow:inset 0 0 0 2px var(--hazard);background:#3b3a1e}
+.cell.at{box-shadow:inset 0 0 0 3px var(--foe)}
+.unit{position:relative;z-index:1;width:78%;height:78%;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--stencil);font-weight:900;font-size:clamp(13px,4vw,19px);line-height:1}
+.unit.p{background:var(--sand);color:#15130a}
+.unit.e{background:var(--foe);color:#fff;border-radius:6px}
+.unit.done{opacity:.5}
+.unit.sel{outline:3px solid var(--hazard);outline-offset:2px}
+.unit i{position:absolute;left:8%;right:8%;bottom:-6px;height:4px;background:#000;border-radius:2px;overflow:hidden}
+.unit i b{display:block;height:100%;background:var(--ally)}
+.unit.e i b{background:#ffb3a6}
+.hit{animation:hit .35s}
+@keyframes hit{0%,100%{transform:none}25%{transform:translateX(-3px)}75%{transform:translateX(3px)}}
+.fbar{display:flex;flex-direction:column;gap:10px;padding-block:12px calc(14px + env(safe-area-inset-bottom,0px))}
+.finfo{min-height:44px;font-size:13px;line-height:1.4;color:var(--sand-soft)}
+.finfo b{color:var(--sand)}
+.flog{font-size:13px;color:var(--hazard);min-height:1.4em}
+.legend{display:flex;gap:12px;flex-wrap:wrap;font-size:12px;color:var(--sand-soft)}
+
+/* ---------- STORY ---------- */
+#g-story{background:#000}
+.cine{position:relative;flex:1 1 auto;min-height:0;cursor:pointer}
+.cine canvas{position:absolute;inset:0;width:100%;height:100%}
+.cine .card{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:8px;padding:16px;pointer-events:none}
+.cine .card h2{margin:0;font-family:var(--stencil);font-weight:900;font-size:clamp(40px,13vw,68px);letter-spacing:.04em;text-transform:uppercase;line-height:.95;text-shadow:0 2px 20px #000}
+.cine .card p{margin:0;font-family:var(--story);font-style:italic;font-size:17px;color:var(--sand);text-shadow:0 1px 8px #000}
+.cine .card small{font-size:12px;font-weight:700;letter-spacing:.24em;text-transform:uppercase;color:var(--hazard)}
+.sbar{flex:none;min-height:200px;display:flex;flex-direction:column;gap:10px;padding-block:14px calc(16px + env(safe-area-inset-bottom,0px));background:#000}
+.subt{font-family:var(--story);font-style:italic;font-size:19px;line-height:1.45;min-height:3em;text-wrap:balance}
+.subt .who{display:block;font-family:var(--body);font-style:normal;font-weight:700;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--hazard);margin-bottom:2px}
+.tap{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--sand-soft)}
+.choices{display:flex;flex-direction:column;gap:8px}
+.choice{display:flex;gap:12px;align-items:baseline;text-align:left;border:1px solid var(--line);background:rgba(216,201,163,.05);border-radius:6px;padding:11px 13px;font-family:var(--story);font-size:17px;cursor:pointer}
+.choice b{font-family:var(--stencil);font-size:16px;color:var(--hazard)}
+.choice small{display:block;font-family:var(--body);font-size:13px;color:var(--sand-soft)}
+.choice[disabled]{opacity:.4;cursor:default}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chips span{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:3px 8px;border:1px solid var(--line);border-radius:4px;color:var(--sand-soft)}
+.chips span.on{color:var(--hazard);border-color:var(--hazard)}
+
+/* ---------- TIR ---------- */
+.range{position:relative;flex:1 1 auto;min-height:0;cursor:crosshair;touch-action:none}
+.range canvas{position:absolute;inset:0;width:100%;height:100%}
+.hud{display:flex;justify-content:space-between;gap:8px;font-weight:700;font-size:13px;letter-spacing:.08em;text-transform:uppercase;padding-block:8px}
+.hud b{color:var(--hazard);font-family:var(--stencil);font-size:22px;letter-spacing:.02em}
+.overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;background:rgba(10,11,9,.86);padding:16px;text-align:center}
+.overlay h2{margin:0;font-family:var(--stencil);font-weight:900;font-size:44px;text-transform:uppercase;line-height:1}
+.overlay p{margin:0;color:var(--sand-soft);max-width:32ch;line-height:1.45}
+.board-list{width:100%;max-width:320px;display:flex;flex-direction:column;gap:4px;font-variant-numeric:tabular-nums}
+.board-list div{display:flex;justify-content:space-between;padding:6px 10px;border-radius:4px;background:var(--panel)}
+.board-list div.me{outline:1px solid var(--hazard)}
+.name{width:100%;max-width:320px;border:1px solid var(--line);background:var(--panel);border-radius:6px;padding:10px 12px;font:inherit;font-size:16px;color:var(--sand);text-align:center}
+
+/* ---------- CHEF ---------- */
+.gauges{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding-block:6px 12px}
+.g{display:flex;flex-direction:column;align-items:center;gap:6px;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--sand-soft)}
+.g .tube{position:relative;width:100%;height:64px;border:1px solid var(--line);border-radius:6px;overflow:hidden;background:var(--panel)}
+.g .tube i{position:absolute;left:0;right:0;bottom:0;background:var(--sand);transition:height .4s}
+.g .tube i.low{background:var(--foe)}
+.g .tube em{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-style:normal;font-family:var(--stencil);font-size:22px;color:#15130a;mix-blend-mode:normal}
+.g.up .tube{box-shadow:0 0 0 2px var(--ally)}
+.g.down .tube{box-shadow:0 0 0 2px var(--foe)}
+.ccard{flex:1 1 auto;display:flex;flex-direction:column;gap:14px;justify-content:center;padding-block:10px}
+.ccard .who{font-size:12px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--hazard)}
+.ccard .txt{font-size:20px;line-height:1.4;font-weight:500;text-wrap:balance}
+.copts{display:flex;flex-direction:column;gap:10px;padding-bottom:calc(16px + env(safe-area-inset-bottom,0px))}
+.copt{text-align:left;border:1px solid var(--line);background:var(--panel);border-radius:8px;padding:14px;font-size:16px;font-weight:600;cursor:pointer}
+.copt:active{background:var(--panel-2)}
+.dayline{display:flex;gap:3px}
+.dayline i{flex:1;height:4px;border-radius:2px;background:var(--line)}
+.dayline i.on{background:var(--hazard)}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<div class="app">
+  <!-- INTRO -->
+  <section class="screen" id="intro"><canvas id="ic"></canvas><button id="skip">Passer</button></section>
+
+  <!-- HUB -->
+  <section class="screen" id="hub" hidden>
+    <div class="hub-in pad">
+      <div class="logo"><b>QG</b><span>Quartier général<br>4 jeux · 1 base</span></div>
+      <button class="tile" data-go="front"><canvas width="128" height="128" data-ic="front"></canvas><div><h3>Front</h3><p>Stratégie au tour par tour. Place tes hommes, prends la position.</p><span class="rec" id="rec-front"></span></div><span class="tag">Stratégie</span></button>
+      <button class="tile" data-go="story"><canvas width="128" height="128" data-ic="story"></canvas><div><h3>Champion</h3><p>L’histoire du popotier de la section 313. 20 chapitres, tes choix comptent.</p><span class="rec" id="rec-story"></span></div><span class="tag">Histoire</span></button>
+      <button class="tile" data-go="tir"><canvas width="128" height="128" data-ic="tir"></canvas><div><h3>Précision</h3><p>Stand de tir. Corrige le vent, vise le centre, entre au classement.</p><span class="rec" id="rec-tir"></span></div><span class="tag">Adresse</span></button>
+      <button class="tile" data-go="chef"><canvas width="128" height="128" data-ic="chef"></canvas><div><h3>Chef de section</h3><p>15 jours pour mener ta section. Moral, forme, discipline, popote.</p><span class="rec" id="rec-chef"></span></div><span class="tag">Gestion</span></button>
+      <div class="foot"><button class="link" id="replay-intro">Revoir l’animation d’ouverture</button><span>Jeu non officiel · aucun lien avec l’Armée de terre</span></div>
+    </div>
+  </section>
+
+  <!-- FRONT -->
+  <section class="screen" id="g-front" hidden>
+    <div class="top pad"><button class="back" data-back>← QG</button><div class="gtitle">Front</div><div class="meta" id="f-meta"></div></div>
+    <div class="pad"><div class="board" id="board"></div></div>
+    <div class="fbar pad">
+      <div class="flog" id="f-log"></div>
+      <div class="finfo" id="f-info"></div>
+      <div class="legend"><span><b>FA</b> Fantassin</span><span><b>TI</b> Tireur</span><span><b>BL</b> Blindé</span><span>🌲 forêt = protège</span></div>
+      <button class="btn" id="f-end">Fin du tour</button>
+    </div>
+  </section>
+
+  <!-- STORY -->
+  <section class="screen" id="g-story" hidden>
+    <div class="top pad"><button class="back" data-back>← QG</button><div class="meta" id="s-chap" style="text-align:center;flex:1"></div><div class="meta" id="s-clock"></div></div>
+    <div class="cine" id="cine"><canvas id="sc"></canvas>
+      <div class="card" id="s-card"><small id="s-card-k">Chapitre 1</small><h2 id="s-card-h">Champion</h2><p id="s-card-p"></p></div>
+    </div>
+    <div class="sbar pad">
+      <div class="subt" id="s-sub" aria-live="polite"></div>
+      <div class="choices" id="s-choices"></div>
+      <div class="tap" id="s-tap" hidden>Touche l’écran pour continuer</div>
+      <div class="choices" id="s-menu">
+        <button class="btn" id="s-new">Commencer l’histoire</button>
+        <button class="btn ghost" id="s-cont" hidden>Reprendre au chapitre <span id="s-cont-n"></span></button>
+        <div class="chips" id="s-found"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TIR -->
+  <section class="screen" id="g-tir" hidden>
+    <div class="top pad"><button class="back" data-back>← QG</button><div class="gtitle">Précision</div><div class="meta" id="t-best"></div></div>
+    <div class="hud pad"><span>Score <b id="t-score">0</b></span><span>Cartouches <b id="t-ammo">15</b></span><span>Vent <b id="t-wind">0</b></span></div>
+    <div class="range" id="range"><canvas id="tc"></canvas>
+      <div class="overlay" id="t-ov">
+        <h2 id="t-ov-h">Stand de tir</h2>
+        <p id="t-ov-p">15 cartouches. Touche la cible pour tirer. Le vent pousse ta balle : vise de l’autre côté de la flèche. Les petites cibles comptent double.</p>
+        <input class="name" id="t-name" maxlength="12" placeholder="Ton nom" value="Champion" hidden>
+        <div class="board-list" id="t-board"></div>
+        <button class="btn" id="t-go">Ouvrir le feu</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- CHEF -->
+  <section class="screen" id="g-chef" hidden>
+    <div class="top pad"><button class="back" data-back>← QG</button><div class="gtitle">Chef de section</div><div class="meta" id="c-day"></div></div>
+    <div class="pad"><div class="dayline" id="c-line"></div></div>
+    <div class="pad"><div class="gauges" id="gauges"></div></div>
+    <div class="ccard pad"><div class="who" id="c-who"></div><div class="txt" id="c-txt"></div></div>
+    <div class="copts pad" id="c-opts"></div>
+  </section>
+</div>
+
+<script>
+(function(){
+"use strict";
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const store={get(k,d){try{const v=localStorage.getItem('qg-'+k);return v==null?d:JSON.parse(v)}catch(_){return d}},set(k,v){try{localStorage.setItem('qg-'+k,JSON.stringify(v))}catch(_){}}};
+const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const DPR=()=>Math.min(2,devicePixelRatio||1);
+function fitCanvas(cv){const d=DPR();cv.width=Math.max(1,cv.clientWidth*d);cv.height=Math.max(1,cv.clientHeight*d);return d}
+let current='intro',onFrame=null;
+function show(id){$$('.screen').forEach(s=>s.hidden=s.id!==id);current=id;onFrame=null}
+
+/* =========================================================
+   INTRO — no background, just the animation
+   ========================================================= */
+const ic=$('#ic'),ix=ic.getContext('2d');let iStart=0,iRun=false,sparks=[];
+function introStart(){show('intro');fitCanvas(ic);iStart=performance.now();iRun=true;sparks=[];
+  (document.fonts&&document.fonts.load?Promise.race([document.fonts.load('900 100px "Big Shoulders Stencil Display"'),new Promise(r=>setTimeout(r,800))]):Promise.resolve()).then(()=>{iStart=performance.now();requestAnimationFrame(introFrame)})}
+const ease=t=>1-Math.pow(1-Math.min(Math.max(t,0),1),3);
+const seg=(t,a,b)=>Math.min(Math.max((t-a)/(b-a),0),1);
+function chevron(cx,cy,w,h,th,col){ix.fillStyle=col;ix.beginPath();ix.moveTo(cx-w/2,cy+h/2);ix.lineTo(cx,cy-h/2);ix.lineTo(cx+w/2,cy+h/2);ix.lineTo(cx+w/2-th,cy+h/2);ix.lineTo(cx,cy-h/2+th*1.3);ix.lineTo(cx-w/2+th,cy+h/2);ix.closePath();ix.fill()}
+function introFrame(now){if(!iRun)return;const t=(now-iStart)/1000;const W=ic.width,H=ic.height,d=DPR(),cx=W/2,cy=H*.44,S=Math.min(W,H*0.8);
+  ix.clearRect(0,0,W,H);ix.fillStyle='#000';ix.fillRect(0,0,W,H);
+  // camera shake at impact
+  const shake=t>2.05&&t<2.5?(1-seg(t,2.05,2.5))*14*d:0;ix.save();ix.translate((Math.random()-.5)*shake,(Math.random()-.5)*shake);
+  const out=seg(t,3.9,4.5),zoom=1+ease(out)*.25,alpha=1-ease(out);ix.globalAlpha=alpha;ix.translate(cx,cy);ix.scale(zoom,zoom);ix.translate(-cx,-cy);
+  // 1. scan line opens
+  const a1=ease(seg(t,0,.6));if(t<2.2){ix.fillStyle=`rgba(242,194,48,${.9*(1-seg(t,1.4,2.2))})`;ix.fillRect(cx-W/2*a1,cy-1*d,W*a1,2*d);}
+  // 2. radar rings + sweep
+  if(t>.4){const a2=ease(seg(t,.4,1.4));ix.strokeStyle=`rgba(216,201,163,${.35*a2})`;ix.lineWidth=1*d;
+    for(let i=1;i<=4;i++){ix.beginPath();ix.arc(cx,cy,S*.12*i*a2,0,7);ix.stroke()}
+    ix.beginPath();ix.moveTo(cx-S*.5*a2,cy);ix.lineTo(cx+S*.5*a2,cy);ix.moveTo(cx,cy-S*.5*a2);ix.lineTo(cx,cy+S*.5*a2);ix.stroke();
+    const ang=t*4;const g=ix.createConicGradient?ix.createConicGradient(ang,cx,cy):null;
+    if(g){g.addColorStop(0,'rgba(242,194,48,.35)');g.addColorStop(.12,'rgba(242,194,48,0)');g.addColorStop(1,'rgba(242,194,48,0)');ix.fillStyle=g;ix.globalAlpha=alpha*(1-seg(t,2,3));ix.beginPath();ix.arc(cx,cy,S*.48*a2,0,7);ix.fill();ix.globalAlpha=alpha}
+    // blips
+    [[.2,-.15,.9],[-.28,.1,1.1],[.1,.3,1.3]].forEach(([bx,by,bt])=>{if(t>bt&&t<2.2){const k=1-seg(t,bt,bt+.8);ix.fillStyle=`rgba(226,85,63,${k})`;ix.beginPath();ix.arc(cx+bx*S,cy+by*S,4*d+(1-k)*8*d,0,7);ix.fill()}})}
+  // 3. three chevrons slam in from below
+  for(let i=0;i<3;i++){const st=1.15+i*.18,p=ease(seg(t,st,st+.28));if(p<=0)continue;
+    const y=cy+S*.36+i*S*.075+(1-p)*H*.6;chevron(cx,y,S*.34,S*.075,S*.028,'#d8c9a3');
+    if(p>=1&&t<st+.45){ix.fillStyle=`rgba(255,255,255,${1-seg(t,st+.28,st+.45)})`;chevron(cx,y,S*.36,S*.08,S*.03,'rgba(255,255,255,.6)')}}
+  // 4. QG stencil slam
+  if(t>1.85){const p=seg(t,1.85,2.08),sc=3-2*ease(p);
+    if(p>=1&&sparks.length===0&&!reduce){for(let i=0;i<70;i++){const a=Math.random()*7,v=(2+Math.random()*9)*d;sparks.push({x:cx,y:cy,vx:Math.cos(a)*v,vy:Math.sin(a)*v-2*d,l:1})}}
+    ix.save();ix.translate(cx,cy);ix.scale(sc,sc);ix.globalAlpha=alpha*Math.min(1,p*2);
+    ix.font=`900 ${S*.42}px "Big Shoulders Stencil Display", Impact, sans-serif`;ix.textAlign='center';ix.textBaseline='middle';
+    ix.fillStyle='#f2c230';ix.fillText('QG',0,S*.02);ix.restore();ix.globalAlpha=alpha;
+    // impact flash
+    if(t<2.3){ix.fillStyle=`rgba(255,240,200,${.55*(1-seg(t,2.05,2.3))*(p>=1?1:0)})`;ix.fillRect(0,0,W,H)}
+    // shockwave
+    const sw=seg(t,2.05,2.7);if(sw>0&&sw<1){ix.strokeStyle=`rgba(242,194,48,${1-sw})`;ix.lineWidth=(6-5*sw)*d;ix.beginPath();ix.arc(cx,cy,S*.15+sw*S*.6,0,7);ix.stroke()}}
+  sparks.forEach(s=>{s.x+=s.vx;s.y+=s.vy;s.vy+=.25*d;s.vx*=.97;s.l-=.022;if(s.l>0){ix.fillStyle=`rgba(255,${180+Math.random()*60|0},80,${s.l})`;ix.fillRect(s.x,s.y,2.5*d,2.5*d)}});
+  // 5. subtitle typewriter
+  if(t>2.4){const txt='QUARTIER GÉNÉRAL · 4 JEUX',n=Math.floor(seg(t,2.4,3.2)*txt.length);ix.font=`600 ${Math.max(12,S*.04)}px Saira, sans-serif`;ix.textAlign='center';ix.fillStyle='#d8c9a3';
+    if('letterSpacing' in ix)ix.letterSpacing=`${S*.012}px`;ix.fillText(txt.slice(0,n)+(n<txt.length&&Math.floor(t*8)%2?'▌':''),cx,cy+S*.3);if('letterSpacing' in ix)ix.letterSpacing='0px'}
+  ix.restore();
+  if(t>4.5)return introEnd();
+  requestAnimationFrame(introFrame)}
+function introEnd(){if(!iRun)return;iRun=false;openHub()}
+$('#intro').addEventListener('click',introEnd);
+$('#replay-intro').onclick=introStart;
+
+/* =========================================================
+   HUB
+   ========================================================= */
+function drawIcon(cv,k){const x=cv.getContext('2d'),W=cv.width;x.clearRect(0,0,W,W);x.fillStyle='#000';x.fillRect(0,0,W,W);
+  if(k==='front'){x.fillStyle='#2b3022';for(let i=0;i<4;i++)for(let j=0;j<4;j++)x.fillRect(8+i*29,8+j*29,26,26);x.fillStyle='#d8c9a3';x.beginPath();x.arc(36,93,10,0,7);x.fill();x.fillStyle='#e2553f';x.fillRect(80,24,20,20);x.strokeStyle='#f2c230';x.lineWidth=4;x.beginPath();x.moveTo(40,85);x.lineTo(84,40);x.stroke()}
+  if(k==='story'){const g=x.createLinearGradient(0,0,0,W);g.addColorStop(0,'#2a2340');g.addColorStop(.7,'#f08a4b');g.addColorStop(1,'#ffc785');x.fillStyle=g;x.fillRect(0,0,W,W);x.fillStyle='#ffe0b0';x.beginPath();x.arc(64,80,18,0,7);x.fill();x.fillStyle='#160d18';x.beginPath();x.moveTo(0,W);x.lineTo(0,96);x.quadraticCurveTo(64,80,128,100);x.lineTo(128,W);x.fill();x.fillRect(58,72,8,24);x.beginPath();x.arc(62,68,6,0,7);x.fill()}
+  if(k==='tir'){[10,8,6,4,2].forEach((r,i)=>{x.fillStyle=i%2?'#d8c9a3':'#15130a';x.beginPath();x.arc(64,64,r*5.5,0,7);x.fill()});x.fillStyle='#e2553f';x.beginPath();x.arc(64,64,6,0,7);x.fill();x.strokeStyle='#f2c230';x.lineWidth=3;x.beginPath();x.moveTo(64,6);x.lineTo(64,40);x.moveTo(64,88);x.lineTo(64,122);x.moveTo(6,64);x.lineTo(40,64);x.moveTo(88,64);x.lineTo(122,64);x.stroke()}
+  if(k==='chef'){['#d8c9a3','#d8c9a3','#e2553f','#d8c9a3'].forEach((c,i)=>{const h=[70,50,26,60][i];x.fillStyle='#22261f';x.fillRect(14+i*26,20,20,88);x.fillStyle=c;x.fillRect(14+i*26,108-h,20,h)})}
+}
+function openHub(){show('hub');$$('[data-ic]').forEach(c=>drawIcon(c,c.dataset.ic));
+  const fb=store.get('front-best',0);$('#rec-front').textContent=fb?'Record : mission '+fb:'Nouveau';
+  const sf=Object.keys(store.get('story-ends',{})).length,sc=store.get('story-ch',0);$('#rec-story').textContent=sf?sf+'/5 fins trouvées':sc?'Chapitre '+(sc+1)+' en cours':'Nouveau';
+  const tb=store.get('tir-board',[]);$('#rec-tir').textContent=tb.length?'Record : '+tb[0].s+' pts ('+tb[0].n+')':'Nouveau';
+  const cb=store.get('chef-best',null);$('#rec-chef').textContent=cb?'Meilleur : '+cb:'Nouveau';}
+$$('.tile').forEach(t=>t.onclick=()=>({front:frontOpen,story:storyOpen,tir:tirOpen,chef:chefOpen})[t.dataset.go]());
+$$('[data-back]').forEach(b=>b.onclick=()=>{if(window.__sAudio)try{window.__sAudio.suspend()}catch(_){}openHub()});
+
+/* =========================================================
+   GAME 1 — FRONT (turn-based tactics)
+   ========================================================= */
+const COLS=7,ROWS=9;
+const TYPES={FA:{n:'Fantassin',hp:10,mv:3,rg:1,dmg:4},TI:{n:'Tireur',hp:7,mv:2,rg:3,dmg:4},BL:{n:'Blindé',hp:15,mv:2,rg:2,dmg:5}};
+let F=null;
+function frontOpen(){show('g-front');frontLevel(1)}
+function frontLevel(lv){const tiles=[];for(let y=0;y<ROWS;y++)for(let x=0;x<COLS;x++)tiles.push('');
+  const free=(x,y)=>y>1&&y<ROWS-2;
+  let rocks=4+Math.min(lv,3),forests=6;
+  while(rocks>0){const x=rnd(0,COLS-1),y=rnd(2,ROWS-3);if(!tiles[y*COLS+x]){tiles[y*COLS+x]='rock';rocks--}}
+  while(forests>0){const x=rnd(0,COLS-1),y=rnd(1,ROWS-2);if(!tiles[y*COLS+x]){tiles[y*COLS+x]='forest';forests--}}
+  const units=[];let id=0;
+  [['FA',1],['TI',3],['BL',5],['FA',2]].slice(0,lv>=3?4:3).forEach(([t,x])=>{const T=TYPES[t];tiles[(ROWS-1)*COLS+x]='';units.push({id:id++,side:'p',t,x,y:ROWS-1,hp:T.hp,moved:false,acted:false})});
+  const ne=Math.min(2+lv,8),et=['FA','TI','FA','BL','TI','FA','BL','TI'];
+  for(let i=0;i<ne;i++){let x,y;do{x=rnd(0,COLS-1);y=rnd(0,1)}while(tiles[y*COLS+x]==='rock'||units.some(u=>u.x===x&&u.y===y));const T=TYPES[et[i]];units.push({id:id++,side:'e',t:et[i],x,y,hp:T.hp+Math.floor(lv/3),moved:false,acted:false})}
+  F={lv,tiles,units,sel:null,turn:1,busy:false,over:false};
+  $('#f-log').textContent='Mission '+lv+' : élimine toutes les unités ennemies.';frontRender()}
+const at=(x,y)=>F.units.find(u=>u.x===x&&u.y===y&&u.hp>0);
+const tile=(x,y)=>F.tiles[y*COLS+x];
+function reach(u){const T=TYPES[u.t],dist={},q=[[u.x,u.y,0]];dist[u.x+','+u.y]=0;const out=[];
+  while(q.length){const [x,y,d]=q.shift();if(d>=T.mv)continue;[[1,0],[-1,0],[0,1],[0,-1]].forEach(([dx,dy])=>{const nx=x+dx,ny=y+dy,k=nx+','+ny;
+    if(nx<0||ny<0||nx>=COLS||ny>=ROWS||k in dist||tile(nx,ny)==='rock'||at(nx,ny))return;dist[k]=d+1;out.push([nx,ny]);q.push([nx,ny,d+1])})}
+  return out}
+const md=(a,b)=>Math.abs(a.x-b.x)+Math.abs(a.y-b.y);
+function targets(u){const T=TYPES[u.t];return F.units.filter(o=>o.hp>0&&o.side!==u.side&&md(u,o)<=T.rg)}
+function frontRender(){const b=$('#board');b.innerHTML='';const s=F.sel;
+  const mv=s&&!s.moved?reach(s):[],tg=s&&!s.acted?targets(s):[];
+  for(let y=0;y<ROWS;y++)for(let x=0;x<COLS;x++){const c=document.createElement('button');c.className='cell '+tile(x,y);c.setAttribute('aria-label','case '+(x+1)+','+(y+1));
+    if(mv.some(([a,bb])=>a===x&&bb===y))c.classList.add('mv');
+    const u=at(x,y);if(u){if(tg.includes(u))c.classList.add('at');const d=document.createElement('div');d.className='unit '+u.side+(u.side==='p'&&u.moved&&u.acted?' done':'')+(s===u?' sel':'');d.dataset.id=u.id;
+      d.innerHTML=u.t+`<i><b style="width:${u.hp/TYPES[u.t].hp*100}%"></b></i>`;c.appendChild(d)}
+    c.onclick=()=>frontTap(x,y);b.appendChild(c)}
+  $('#f-meta').textContent='Mission '+F.lv+' · Tour '+F.turn;
+  if(s){const T=TYPES[s.t];$('#f-info').innerHTML=`<b>${T.n}</b> · ${s.hp}/${T.hp} PV · déplacement ${T.mv} · portée ${T.rg} · dégâts ${T.dmg}<br>${s.moved?'Déjà déplacé.':'Touche une case jaune pour bouger.'} ${s.acted?'A déjà tiré.':tg.length?'Touche un ennemi entouré de rouge pour tirer.':'Aucun ennemi à portée.'}`}
+  else $('#f-info').innerHTML='Touche une de tes unités (beiges) pour la commander.';
+  $('#f-end').disabled=F.busy||F.over;$('#f-end').textContent=F.over?'…':'Fin du tour'}
+function frontTap(x,y){if(F.busy||F.over)return;const u=at(x,y),s=F.sel;
+  if(u&&u.side==='p'){F.sel=u;return frontRender()}
+  if(s&&u&&u.side==='e'&&!s.acted&&targets(s).includes(u)){attack(s,u);s.acted=true;s.moved=true;frontRender();return frontCheck()}
+  if(s&&!u&&!s.moved&&reach(s).some(([a,b])=>a===x&&b===y)){s.x=x;s.y=y;s.moved=true;frontRender();return}
+  F.sel=null;frontRender()}
+function attack(a,d){let dmg=TYPES[a.t].dmg+rnd(-1,1);if(tile(d.x,d.y)==='forest')dmg-=1;if(a.t==='TI'&&d.t==='BL')dmg-=1;if(a.t==='BL'&&d.t==='FA')dmg+=1;dmg=Math.max(1,dmg);d.hp-=dmg;
+  $('#f-log').textContent=`${TYPES[a.t].n} ${a.side==='p'?'allié':'ennemi'} → ${TYPES[d.t].n} : −${dmg} PV${d.hp<=0?' · éliminé !':''}`;
+  if(navigator.vibrate&&d.side==='p')try{navigator.vibrate(60)}catch(_){}
+  setTimeout(()=>{const el=document.querySelector(`.unit[data-id="${d.id}"]`);if(el)el.classList.add('hit')},0)}
+function frontCheck(){F.units=F.units.filter(u=>u.hp>0);if(F.sel&&F.sel.hp<=0)F.sel=null;
+  if(!F.units.some(u=>u.side==='e')){F.over=true;const best=Math.max(store.get('front-best',0),F.lv);store.set('front-best',best);
+    $('#f-log').textContent='Position prise ! Mission '+F.lv+' réussie.';frontRender();setTimeout(()=>{$('#f-end').disabled=false;$('#f-end').textContent='Mission suivante';$('#f-end').onclick=()=>{$('#f-end').onclick=frontEndTurn;frontLevel(F.lv+1)}},400);return true}
+  if(!F.units.some(u=>u.side==='p')){F.over=true;$('#f-log').textContent='Section anéantie. Mission '+F.lv+' échouée.';frontRender();setTimeout(()=>{$('#f-end').disabled=false;$('#f-end').textContent='Recommencer à la mission 1';$('#f-end').onclick=()=>{$('#f-end').onclick=frontEndTurn;frontLevel(1)}},400);return true}
+  return false}
+function frontEndTurn(){if(F.busy||F.over)return;F.busy=true;F.sel=null;frontRender();
+  const foes=F.units.filter(u=>u.side==='e');let i=0;
+  (function step(){if(F.over)return;if(i>=foes.length){F.units.forEach(u=>{u.moved=false;u.acted=false});F.turn++;F.busy=false;$('#f-log').textContent='À toi de jouer.';return frontRender()}
+    const e=foes[i++];if(e.hp<=0)return step();
+    let tg=targets(e);
+    if(!tg.length){const ps=F.units.filter(u=>u.side==='p'&&u.hp>0);if(!ps.length)return;const opts=[[e.x,e.y]].concat(reach(e));
+      let best=opts[0],bs=1e9;opts.forEach(([x,y])=>{const dmin=Math.min(...ps.map(p=>Math.abs(p.x-x)+Math.abs(p.y-y)));const inR=dmin<=TYPES[e.t].rg;const sc=(inR?-100:0)+dmin+(tile(x,y)==='forest'?-.5:0);if(sc<bs){bs=sc;best=[x,y]}});
+      e.x=best[0];e.y=best[1];tg=targets(e)}
+    if(tg.length){tg.sort((a,b)=>a.hp-b.hp);attack(e,tg[0])}
+    frontRender();if(frontCheck())return;setTimeout(step,450)})()}
+$('#f-end').onclick=frontEndTurn;
+
+/* =========================================================
+   GAME 2 — CHAMPION (20-chapter interactive story)
+   ========================================================= */
+const ENDS={
+  legende:{t:'Légende de la 313',d:'Toute la compagnie 31 connaît le nom de Champion.'},
+  coeur:{t:'Le cœur de la section',d:'Champion n’a jamais laissé personne derrière.'},
+  exemplaire:{t:'Sergent exemplaire',d:'Le chef de section le cite en exemple aux nouveaux.'},
+  popote:{t:'Popotier pour toujours',d:'Pas parfait. Mais la 313 a toujours eu son café.'},
+  fete:{t:'La fête de trop',d:'Une dernière popote mémorable. Un peu trop mémorable.'}
+};
+const CH=[
+ {t:'La grille',k:'school',c:'07:30',l:[['','Saint-Maixent-l’École. ENSOA.'],['','Un sac sur l’épaule, l’EVSO Poey passe la grille pour la première fois.'],['Adjudant','Compagnie 31 ! Section 313 ! Au pas de course !'],['','La chambrée sent la cire et le café froid. Six lits, six armoires, six inconnus.']],
+  q:[{l:'Aller serrer la main de chacun',s:'Les gars retiendront ton nom.',fx:{mor:1},a:[['Un camarade','Poey ? Bienvenue à la 313, frère.']]},
+     {l:'Ranger ton armoire au carré',s:'Le chef de section passe dans dix minutes.',fx:{chef:1},a:[['Chef de section','Armoire impeccable. Ça commence bien, Poey.']]}]},
+ {t:'Le surnom',k:'track',c:'06:00',l:[['','Premier footing de la section. Huit kilomètres, sac au dos.'],['','Au dernier virage, Poey est en tête. Derrière, un camarade s’effondre sur le bas-côté.']],
+  q:[{l:'Finir premier',s:'Le chef a le chrono en main.',fx:{chef:1},a:[['','Poey franchit la ligne loin devant.'],['Chef de section','Pas mal… champion.'],['','Le mot reste. Dès le soir, toute la section l’appelle Champion.']]},
+     {l:'Faire demi-tour pour l’aider',s:'Tu finiras dernier.',fx:{mor:2},a:[['','Poey revient, prend le sac du camarade et finit avec lui, dernier.'],['Le camarade','T’es un vrai champion, toi.'],['','Le mot reste. Dès le soir, toute la section l’appelle Champion.']]}]},
+ {t:'Le volontaire',k:'room',c:'21:00',l:[['Chef de section','La 313 a besoin d’un popotier. Café, ravitaillement, moral des troupes. Un volontaire ?'],['','Silence. Puis une main se lève. Celle de Champion.'],['Chef de section','Popotier Poey. Ne me déçois pas.'],['','Problème : la popote est vide. Il faut de l’argent pour démarrer.']],
+  q:[{l:'Cagnotte : 5 € chacun',s:'Juste, mais certains vont râler.',fx:{stock:1},a:[['','Trente euros dans une boîte de rations. Deux gars râlent, mais tout le monde paie.']]},
+     {l:'Payer le premier stock de ta poche',s:'Ton compte en banque va pleurer.',fx:{stock:2,mor:1},a:[['','Champion paie tout. La section ne l’oubliera pas.']]}]},
+ {t:'Première popote',k:'room',c:'18:30',l:[['','Supermarché du coin. Un chariot, une liste, un budget serré.'],['Champion','Bon. Qu’est-ce qui fait tenir une section ?']],
+  q:[{l:'Café, chocolat et biscuits',s:'Le classique qui réchauffe.',fx:{mor:1,stock:1},a:[['','Le soir, l’odeur du café envahit le couloir. La 313 a enfin son QG.']]},
+     {l:'Boissons énergisantes et bonbons',s:'Ça réveille. Ça énerve aussi.',fx:{mor:1,chef:-1},a:[['Chef de section','Popotier… pourquoi toute ma section tremble à 23 heures ?']]}]},
+ {t:'Le casse',k:'room',c:'06:10',l:[['','Au réveil, l’armoire de la popote est ouverte. Vide.'],['','Plus de café. Plus de chocolat. Juste un mot : « Merci la 313 ! »'],['Un camarade','C’est forcément la 312. Ils rigolent depuis ce matin.']],
+  q:[{l:'Mener l’enquête',s:'Retrouver les preuves.',fx:{mor:1},a:[['','Champion suit les miettes de biscuits jusqu’à la chambrée de la 312.'],['','Les preuves sont là. Le popotier de la 312 devient tout rouge.']]},
+     {l:'Racheter le stock sans rien dire',s:'Ça coûte cher, mais pas d’histoire.',fx:{stock:-1,chef:1},a:[['','Champion rachète tout. Le chef de section remarque son calme.']]}]},
+ {t:'La 312',k:'school',c:'12:00',l:[['','Au réfectoire, le popotier de la 312 s’assoit en face de Champion.'],['Popotier de la 312','Sans rancune ? C’était une blague. Et on a un surplus de rations, nous.']],
+  q:[{l:'Préparer la revanche',s:'Ça va être drôle. Ou pas.',fx:{mor:1,chef:-1},a:[['','Le lendemain, les lits de la 312 sont retrouvés dans la cour. Faits au carré.'],['Chef de section','Je ne veux pas savoir qui a fait ça. Mais bien joué.']]},
+     {l:'Proposer une alliance',s:'Café contre rations.',fx:{stock:1,chef:1},a:[['','Poignée de main. La 312 et la 313 partagent désormais leurs ravitos.']]}]},
+ {t:'Départ terrain',k:'crest',c:'05:00',l:[['','Trois jours de terrain. Les camions attendent sous un ciel orange.'],['','Le sac de Champion pèse déjà vingt kilos. Il reste de la place pour une seule chose.']],
+  q:[{l:'Un deuxième thermos de café',s:'Le moral avant tout.',fx:{mor:1},a:[['Champion','Pas de café, pas de 313.']]},
+     {l:'Des rations en plus',s:'Le ventre avant tout.',fx:{stock:1},a:[['Champion','Une section qui mange est une section qui marche.']]}]},
+ {t:'Le bivouac',k:'camp',c:'22:40',l:[['','Premier soir. Il pleut depuis six heures. Personne ne parle.'],['Un camarade','Champion… dis-moi qu’il reste du café.']],
+  q:[{l:'Café chaud pour tout le monde',s:'Le moral remonte, le stock baisse.',fx:{mor:2,stock:-1},a:[['','Les gobelets fument. Quelqu’un se met à rire. La 313 revit.']]},
+     {l:'Garder des réserves',s:'Le terrain est encore long.',fx:{chef:1},a:[['Chef de section','Bonne gestion, popotier. On en aura besoin.']]}]},
+ {t:'La radio',k:'crest',c:'19:40',l:[['','Deuxième soir. La radio est morte.'],['Chef de section','Champion, tu pars devant avec la popote. Le ravitaillement doit être au point de regroupement avant l’aube.'],['Champion','La 313 aura son café. Parole de popotier.'],['','Le point de regroupement est de l’autre côté de la vallée.']],
+  q:[{l:'Prendre la route',s:'Rapide, mais à découvert.',fx:{path:'route'}},{l:'Couper par la forêt',s:'Lent, mais caché.',fx:{late:1,path:'foret'}}]},
+ {t:'L’obstacle',k:s=>s.path==='route'?'bridge':'forest',c:'23:10',l:s=>s.path==='route'?[['','La route mène au vieux pont de pierre.'],['','Au milieu, il manque trois mètres. L’eau gronde en dessous.'],['Champion','Avec quinze kilos de popote sur le dos… ça se tente ?']]:[['','Un ravin coupe la forêt en deux.'],['','Un tronc couché fait office de pont. Il est glissant.'],['Champion','Avec quinze kilos de popote sur le dos… ça se tente ?']],
+  q:[{l:'Passer en force',s:'Tu gagnes du temps. Si tu réussis.',fx:{lamp:false},a:[['','Champion passe. Le thermos a tenu.'],['','La lampe, elle, tombe dans le noir. Tant pis.']]},
+     {l:'Faire le détour',s:'Plus sûr. Plus long.',fx:{late:1},a:[['','Une heure de perdue. Mais tout le matériel est intact.']]}]},
+ {t:'Le blessé',k:'forest',c:'00:35',l:[['','Sous les arbres, la pluie fait un bruit de radio cassée.'],['','Quelque chose bouge contre un tronc.'],['Voix','Champion ? C’est toi ? Ma cheville a lâché…'],['','Un camarade de la 313, perdu depuis la dernière marche.']],
+  q:[{l:'L’aider à marcher',s:'Vous irez deux fois moins vite.',fx:{late:1,help:true,mor:1},a:[['Le camarade','Merci, Champion. Je te dois un café.'],['Champion','C’est moi le popotier. Tu me dois rien.'],['','Il passe un bras sur son épaule. Ils repartent.']]},
+     {l:'Lui laisser du chocolat et continuer',s:'Tu promets de revenir avec du renfort.',fx:{},a:[['Champion','Garde le chocolat. Je reviens, promis.'],['','Champion ne se retourne pas.']]}]},
+ {t:'Le regroupement',k:'plain',c:'05:20',l:[['','La plaine. Les lumières de la 313, enfin, au loin.'],['','Une fusée éclairante monte. La section repart dans dix minutes.'],['','Chargé comme il est, Champion n’y sera pas à temps. Sauf si…']],
+  q:[{l:'Courir de toutes ses forces',s:'Ça passe s’il n’a pas trop de retard.',fx:s=>{s.arrived=s.late<=1;if(s.arrived)s.chef++},a:s=>s.arrived?[['','Champion court, le thermos serré contre lui.'],['','Une sentinelle de la 313 crie : « La popote arrive ! »']]:[['','Champion court. Trop tard.'],['','Les derniers sacs de la 313 disparaissent derrière la colline.']]},
+     {l:'Prévenir en morse avec la lampe',s:'Il faut encore avoir la lampe.',need:'lamp',fx:s=>{s.arrived=true;s.chef+=2},a:[['','Champion lève sa lampe. Court, long. Court, court, long…'],['Chef de section','C’est le popotier ! Personne ne bouge, on l’attend !']]}]},
+ {t:'Le retour',k:'camp',c:'09:00',l:s=>[s.arrived?['Chef de section','La section a tenu grâce à toi, Champion.']:['Chef de section','On est partis sans le ravito. On en reparlera.'],s.help?['','Le camarade de la forêt est soigné. Il ne quitte plus Champion d’une semelle.']:['','Le camarade de la forêt a été retrouvé par une patrouille. Il ne dit rien.'],['','La section rentre à Saint-Maixent, trempée et épuisée.']],
+  q:[{l:'Dormir douze heures',s:'Tu l’as bien mérité.',fx:{},a:[['','Champion dort comme une pierre. Le lendemain, il est en pleine forme.']]},
+     {l:'Laver toutes les gamelles',s:'Personne ne veut le faire.',fx:{mor:1,chef:1},a:[['','À minuit, les gamelles brillent. La section le remarque.']]}]},
+ {t:'L’inspection',k:'room',c:'07:00',l:[['Adjudant','Inspection ! Le capitaine de la compagnie 31 arrive !'],['','Le capitaine ouvre l’armoire de la popote. Trois paquets de bonbons tombent à ses pieds.'],['Capitaine','C’est quoi, ça ?']],
+  q:[{l:'« C’est ma popote, mon capitaine. »',s:'Assumer.',fx:{chef:1},a:[['Capitaine','Un popotier qui assume. Rangez-moi ça au carré.']]},
+     {l:'« Des munitions pour le moral, mon capitaine. »',s:'Tenter l’humour.',fx:{mor:1,chef:-1},a:[['','La section se retient de rire. Le capitaine aussi. Presque.']]}]},
+ {t:'La blessure',k:'track',c:'16:00',l:[['','Séance de piste. Au troisième tour, le genou de Champion lâche.'],['','La douleur est vive. Le chrono tourne.']],
+  q:[{l:'Serrer les dents et finir',s:'Le chef regarde.',fx:{chef:1,hurt:true},a:[['','Il finit. Le soir, son genou a doublé de volume.']]},
+     {l:'Aller à l’infirmerie',s:'Être malin plutôt que fier.',fx:{},a:[['Médecin','Bonne décision. Trois jours de repos et ça repart.']]}]},
+ {t:'Le doute',k:'room',c:'23:50',l:s=>[['',s.hurt?'Le genou guérit mal. Champion fixe le plafond de la chambrée.':'La fatigue s’accumule. Champion fixe le plafond de la chambrée.'],['Champion','Qu’est-ce que je fais là, moi ?']],
+  q:[{l:'Appeler la famille',s:'Une voix de la maison.',fx:{},a:[['Voix au téléphone','On est fiers de toi. Tu lâches rien, d’accord ?'],['','Champion raccroche. Il sourit dans le noir.']]},
+     {l:'Aller voir la section',s:'Ils sont réveillés eux aussi.',fx:{mor:1},a:s=>s.help?[['Le camarade','Tu m’as porté dans la forêt. Maintenant c’est nous qui te portons.']]:[['Un camarade','Sans toi, plus de café. Sans café, plus de 313. Tu restes.']]}]},
+ {t:'La marche finale',k:'plain',c:'04:00',l:[['','La marche finale. Quarante kilomètres. La dernière épreuve du stage.'],['','Au kilomètre trente, un camarade ralentit. Son sac le tire en arrière.']],
+  q:[{l:'Porter son sac en plus du tien',s:'Dix kilomètres avec deux sacs.',fx:s=>{s.mor+=2;if(s.hurt)s.chef--},a:s=>[['','Deux sacs. Dix kilomètres. Champion ne dit pas un mot.'],s.hurt?['','Son genou hurle. Il passe la ligne en boitant, mais il la passe.']:['','Il passe la ligne avec le camarade. La 313 applaudit.']]},
+     {l:'L’encourager et garder ton rythme',s:'Chacun son sac.',fx:{chef:1},a:[['Champion','Allez, frère ! La popote t’attend à l’arrivée !'],['','Il tient. Tout le monde tient.']]}]},
+ {t:'La dernière popote',k:'camp',c:'21:00',l:s=>[['',s.stock>=3?'L’armoire de la popote est encore pleine.':s.stock>=1?'Il reste un peu de stock dans l’armoire.':'L’armoire de la popote est presque vide.'],['','Demain, c’est la cérémonie. Ce soir, c’est la dernière popote de la 313.']],
+  q:[{l:'Grande fête : tout y passe',s:'Café, gâteaux, musique.',fx:s=>{s.mor+=2;s.party=true;s.stock=0},a:[['','La 313 chante jusqu’à l’extinction des feux. Et un peu après.'],['Adjudant','C’EST QUOI CE BOUCAN ?!']]},
+     {l:'Un discours de popotier',s:'Quelques mots pour la section.',fx:{mor:1,chef:1},a:[['Champion','On est arrivés inconnus. On repart en section. Merci la 313.'],['','Personne ne dit rien. Puis tout le monde applaudit.']]}]},
+ {t:'La cérémonie',k:'parade',c:'10:00',l:s=>{const e=endKey(s);return[['','Place d’armes. La compagnie 31 en rang. Le drapeau claque au vent.'],['','Un à un, les élèves de la 313 reçoivent leurs galons de sergent.'],['Chef de section','EVSO Poey… pardon. Sergent Poey.'],
+   e==='legende'?['Chef de section','Meilleur popotier que la compagnie 31 ait connu. Et un vrai chef.']:e==='coeur'?['Chef de section','Tu n’as jamais laissé personne derrière. Garde ça toute ta carrière.']:e==='exemplaire'?['Chef de section','Rigoureux, fiable. Je te citerai en exemple aux prochains.']:e==='fete'?['Chef de section','Et la prochaine fois, la popote finit à 22 heures. Compris ?']:['Chef de section','Pas toujours parfait. Mais tu as tenu. Et la 313 a toujours eu son café.']]}},
+ {t:'Épilogue',k:'dawn',c:'06:00',l:s=>{const e=endKey(s);return[['','Le lendemain matin. La section se sépare. Chacun part vers son régiment.'],
+   ['','Sur le quai de la gare, quelqu’un sort un thermos.'],['Un camarade','Un dernier café, Champion ?'],
+   e==='coeur'||e==='legende'?['','Toute la 313 est là. Personne ne manque.']:['','Champion sourit et remplit les gobelets.'],['Champion','Pour la 313.']]}}
+];
+function endKey(s){if(s.party&&s.chef<3)return'fete';if(s.mor>=9&&s.chef>=5)return'legende';if(s.help&&s.mor>=6)return'coeur';if(s.chef>=5)return'exemplaire';return'popote'}
+
+let ST=null,chI=0,q=[],qi=0,sMode='menu',sAfter=null,sT=0,sCur=null;
+function storyOpen(){show('g-story');fitCanvas($('#sc'));sMode='menu';sCur=null;$('#s-card').hidden=false;$('#s-card-k').textContent='Compagnie 31 · Section 313';$('#s-card-h').textContent='Champion';$('#s-card-p').textContent='Un film en 20 chapitres. Tu choisis la suite.';
+  $('#s-sub').innerHTML='';$('#s-choices').innerHTML='';$('#s-tap').hidden=true;$('#s-menu').hidden=false;$('#s-chap').textContent='';$('#s-clock').textContent='';
+  const saved=store.get('story-save',null);$('#s-cont').hidden=!saved;if(saved)$('#s-cont-n').textContent=saved.ch+1;
+  const f=store.get('story-ends',{}),chips=$('#s-found');chips.innerHTML='';const n=document.createElement('span');n.textContent=Object.keys(f).length+'/5 fins';chips.appendChild(n);
+  Object.entries(ENDS).forEach(([k,v])=>{const s=document.createElement('span');s.className=f[k]?'on':'';s.textContent=f[k]?v.t:'Fin ?';chips.appendChild(s)});
+  onFrame=storyFrame}
+$('#s-new').onclick=()=>{ST={mor:0,chef:0,stock:1,lamp:true,help:false,late:0,hurt:false,party:false};storyChapter(0)};
+$('#s-cont').onclick=()=>{const s=store.get('story-save',null);if(!s)return;ST=s.st;storyChapter(s.ch)};
+const val=(v)=>typeof v==='function'?v(ST):v;
+function storyChapter(i){chI=i;store.set('story-save',{ch:i,st:ST});store.set('story-ch',i);const C=CH[i];sCur=val(C.k);sT=0;
+  $('#s-menu').hidden=true;$('#s-choices').innerHTML='';$('#s-chap').textContent='Chapitre '+(i+1)+'/20';$('#s-clock').textContent=C.c;
+  $('#s-card').hidden=false;$('#s-card-k').textContent='Chapitre '+(i+1);$('#s-card-h').textContent=C.t;$('#s-card-p').textContent='';$('#s-sub').innerHTML='';
+  sMode='title';setTimeout(()=>{if(sMode!=='title'||chI!==i)return;$('#s-card').hidden=true;playLines(val(C.l),()=>storyAsk())},1400)}
+function playLines(lines,then){q=lines;qi=0;sAfter=then;sMode='lines';sLine()}
+function sLine(){const [w,t]=q[qi];$('#s-sub').innerHTML=(w?`<span class="who">${w}</span>`:'')+t;$('#s-tap').hidden=false}
+function storyAdvance(){if(sMode==='title'){$('#s-card').hidden=true;sMode='x';playLines(val(CH[chI].l),()=>storyAsk());return}
+  if(sMode!=='lines')return;qi++;if(qi<q.length)return sLine();$('#s-tap').hidden=true;sMode='x';const f=sAfter;sAfter=null;f&&f()}
+function storyAsk(){const C=CH[chI];if(!C.q)return storyNext();sMode='choice';const box=$('#s-choices');box.innerHTML='';
+  C.q.forEach((o,k)=>{const ok=!o.need||ST[o.need];const b=document.createElement('button');b.className='choice';b.disabled=!ok;
+    b.innerHTML=`<b>${'AB'[k]}</b><span>${o.l}<small>${ok?o.s:'Champion n’a plus la lampe.'}</small></span>`;b.onclick=()=>storyPick(o);box.appendChild(b)})}
+function storyPick(o){$('#s-choices').innerHTML='';if(typeof o.fx==='function')o.fx(ST);else Object.entries(o.fx||{}).forEach(([k,v])=>{if(typeof v==='number')ST[k]=(ST[k]||0)+v;else ST[k]=v});
+  const a=val(o.a);if(a&&a.length)playLines(a,storyNext);else storyNext()}
+function storyNext(){if(chI+1<CH.length)return storyChapter(chI+1);
+  const e=endKey(ST),f=store.get('story-ends',{});f[e]=1;store.set('story-ends',f);store.set('story-save',null);store.set('story-ch',0);
+  sMode='menu';$('#s-sub').innerHTML='';$('#s-card').hidden=false;$('#s-card-k').textContent='Fin';$('#s-card-h').textContent=ENDS[e].t;$('#s-card-p').textContent=ENDS[e].d;
+  $('#s-menu').hidden=false;$('#s-cont').hidden=true;$('#s-new').textContent='Rejouer et changer la fin';
+  const chips=$('#s-found');chips.innerHTML='';const n=document.createElement('span');n.textContent=Object.keys(f).length+'/5 fins';chips.appendChild(n);Object.entries(ENDS).forEach(([k,v])=>{const s=document.createElement('span');s.className=f[k]?'on':'';s.textContent=f[k]?v.t:'Fin ?';chips.appendChild(s)})}
+$('#cine').onclick=storyAdvance;$('.sbar').addEventListener('click',e=>{if(!e.target.closest('button'))storyAdvance()});
+
+// ---- story drawing (2D silhouettes) ----
+const sc=$('#sc'),c2=sc.getContext('2d');
+const R=(s=>()=>(s=(s*16807)%2147483647)/2147483647)(42);
+const STARS=Array.from({length:110},()=>[R(),R()*.7,R()*1.3+.3,R()*6]);
+const TREES=Array.from({length:36},()=>[R(),R(),.6+R()*.6]);
+const RAIN=Array.from({length:150},()=>[R(),R(),.6+R()*.8]);
+function sky(st){const H=sc.height,g=c2.createLinearGradient(0,0,0,H);st.forEach(([o,col])=>g.addColorStop(o,col));c2.fillStyle=g;c2.fillRect(0,0,sc.width,H)}
+function stars(a,t){const W=sc.width,H=sc.height,d=DPR();STARS.forEach(([x,y,r,p])=>{c2.fillStyle=`rgba(239,230,212,${a*(.4+.5*Math.sin(t+p)**2)})`;c2.beginPath();c2.arc(x*W,y*H,r*d,0,7);c2.fill()})}
+function ridge(base,amp,f,seed,col,off){const W=sc.width,H=sc.height;c2.fillStyle=col;c2.beginPath();c2.moveTo(0,H);for(let x=0;x<=W+8;x+=W/60){const X=x/W+off;c2.lineTo(x,H*base-(Math.sin(X*f+seed)*.6+Math.sin(X*f*2.3+seed*3)*.3+Math.sin(X*f*5.1+seed)*.1)*amp*H)}c2.lineTo(W,H);c2.fill()}
+function disc(x,y,r,col){c2.fillStyle=col;c2.beginPath();c2.arc(x,y,r,0,7);c2.fill()}
+function glow(x,y,r,rgb,a){const g=c2.createRadialGradient(x,y,0,x,y,r);g.addColorStop(0,`rgba(${rgb},${a})`);g.addColorStop(1,`rgba(${rgb},0)`);c2.fillStyle=g;c2.fillRect(x-r,y-r,r*2,r*2)}
+function person(x,y,s,t,col,o={}){const w=o.walk===false?0:Math.sin(t*6);c2.save();c2.translate(x,y);c2.fillStyle=col;c2.strokeStyle=col;c2.lineCap='round';c2.lineWidth=s*.13;
+  c2.beginPath();c2.moveTo(0,-s*.55);c2.lineTo(w*s*.22,0);c2.moveTo(0,-s*.55);c2.lineTo(-w*s*.22,0);c2.stroke();
+  c2.beginPath();c2.moveTo(0,-s*.55);c2.lineTo(s*.03,-s*1.05);c2.stroke();c2.fillRect(-s*.2,-s*1.02,s*.18,s*.32);
+  c2.beginPath();c2.moveTo(s*.03,-s*.95);c2.lineTo(-w*s*.2+s*.05,-s*.6);c2.stroke();disc(s*.04,-s*1.18,s*.12,col);c2.fillRect(-s*.1,-s*1.3,s*.3,s*.06);
+  if(o.lamp){c2.beginPath();c2.moveTo(s*.03,-s*.95);c2.lineTo(s*.3,-s*1.25);c2.stroke();glow(s*.32,-s*1.3,s*(o.big||.5),'255,154,77',.9);disc(s*.32,-s*1.3,s*.05,'#ffd2a8')}
+  c2.restore()}
+const SD={
+ school(t,T){const W=sc.width,H=sc.height;sky([[0,'#7fa6c9'],[1,'#d9e2e6']]);disc(W*.8,H*.18,W*.06,'#fff6dc');
+   c2.fillStyle='#8a8f8c';c2.fillRect(W*.05,H*.42,W*.5,H*.4);c2.fillRect(W*.6,H*.5,W*.35,H*.32);c2.fillStyle='#6f7471';for(let i=0;i<6;i++)for(let j=0;j<3;j++)c2.fillRect(W*(.08+i*.075),H*(.47+j*.1),W*.04,H*.05);
+   c2.fillStyle='#3d403e';c2.fillRect(W*.3,H*.22,W*.008,H*.6);const fl=Math.sin(t*3)*W*.01;
+   c2.fillStyle='#2b4aa0';c2.fillRect(W*.308,H*.23,W*.05,H*.06);c2.fillStyle='#f3f3f3';c2.fillRect(W*.358,H*.23+fl*.2,W*.05,H*.06);c2.fillStyle='#d23a3a';c2.fillRect(W*.408,H*.23+fl*.4,W*.05,H*.06);
+   c2.fillStyle='#4a4d47';c2.fillRect(0,H*.82,W,H*.18);c2.fillStyle='#2a2c28';for(let i=0;i<12;i++)c2.fillRect(i*W/11,H*.7,W*.012,H*.12);c2.fillRect(0,H*.7,W,H*.012);
+   person(Math.min(W*.5,W*.05+T*W*.06),H*.93,H*.12,t,'#1c1e1b',{walk:T*W*.06<W*.45})},
+ room(t,T){const W=sc.width,H=sc.height;sky([[0,'#2a2620'],[1,'#3d362b']]);c2.fillStyle='#4b4436';c2.fillRect(0,H*.75,W,H*.25);
+   glow(W*.5,H*.1,W*.6,'255,220,160',.35);c2.fillStyle='#ffe9b8';c2.fillRect(W*.45,H*.08,W*.1,H*.015);
+   for(let i=0;i<4;i++){c2.fillStyle='#5d5a4a';c2.fillRect(W*(.04+i*.24),H*.3,W*.18,H*.45);c2.fillStyle='#4a4739';c2.fillRect(W*(.04+i*.24)+W*.088,H*.3,W*.004,H*.45);c2.fillStyle='#2a2820';c2.fillRect(W*(.04+i*.24)+W*.07,H*.5,W*.01,H*.04);c2.fillRect(W*(.04+i*.24)+W*.1,H*.5,W*.01,H*.04)}
+   c2.fillStyle='#f2c230';c2.font=`900 ${H*.05}px "Big Shoulders Stencil Display",Impact`;c2.fillText('313',W*.08,H*.38);
+   c2.fillStyle='#2e3b2a';c2.fillRect(W*.1,H*.78,W*.35,H*.08);c2.fillRect(W*.55,H*.78,W*.35,H*.08);
+   const steam=(T*.6)%1;c2.fillStyle=`rgba(255,255,255,${.3*(1-steam)})`;disc(W*.72,H*.74-steam*H*.1,H*.02,`rgba(255,255,255,${.25*(1-steam)})`);c2.fillStyle='#c9b98f';c2.fillRect(W*.7,H*.74,W*.04,H*.05);
+   person(W*.5,H*.95,H*.16,t,'#16140f',{walk:false})},
+ track(t,T){const W=sc.width,H=sc.height;sky([[0,'#f7b267'],[.6,'#f4845f'],[1,'#ffd6a5']]);disc(W*.25,H*.45,W*.08,'#fff1d6');
+   ridge(.62,.03,2,2,'#c96a4a',0);c2.fillStyle='#a8473a';c2.fillRect(0,H*.7,W,H*.3);c2.strokeStyle='rgba(255,255,255,.5)';c2.lineWidth=DPR()*2;
+   for(let i=0;i<4;i++){c2.beginPath();c2.moveTo(0,H*(.74+i*.06));c2.lineTo(W,H*(.74+i*.06));c2.stroke()}
+   const x=((T*.18)%1.3-.15)*W;person(x,H*.86,H*.13,t*1.6,'#2a1410');person(x-W*.18,H*.92,H*.13,t*1.5+1,'#2a1410')},
+ crest(t,T){const W=sc.width,H=sc.height;sky([[0,'#2a2340'],[.45,'#a2516a'],[.75,'#f08a4b'],[1,'#ffc785']]);const sy=H*(.62+Math.min(T/40,1)*.08);glow(W*.5,sy,W*.6,'255,190,110',.6);disc(W*.5,sy,W*.09,'#ffe0b0');
+   stars(Math.min(T/30,1)*.5,t);ridge(.7,.09,3,1,'#6a3a55',T*.004);ridge(.82,.07,4,5,'#3a2238',T*.01);ridge(.94,.05,2,9,'#160d18',T*.03);person(W*.42,H*.885,H*.12,t,'#160d18')},
+ bridge(t,T){const W=sc.width,H=sc.height,d=DPR();sky([[0,'#060a18'],[.7,'#162344'],[1,'#22325a']]);stars(.8,t);disc(W*.75,H*.18,W*.05,'#efe6d4');ridge(.6,.06,3,2,'#141c33',0);
+   c2.fillStyle='#0c142a';c2.fillRect(0,H*.8,W,H*.2);for(let i=0;i<30;i++){const y=H*(.82+(i%10)*.018),x=((i*137+t*40*d)%(W+80))-40;c2.fillStyle='rgba(239,230,212,.12)';c2.fillRect(x,y,W*.06,d)}
+   c2.fillStyle='#0a0f1e';c2.fillRect(0,H*.66,W*.42,H*.04);c2.fillRect(W*.58,H*.66,W*.42,H*.04);[.1,.3,.7,.9].forEach(p=>c2.fillRect(W*p-W*.025,H*.7,W*.05,H*.12));
+   person(Math.min(W*.36,W*.05+T*W*.03),H*.66,H*.1,t,'#0a0f1e',{lamp:ST&&ST.lamp,walk:T*W*.03<W*.31})},
+ forest(t,T){const W=sc.width,H=sc.height,d=DPR();sky([[0,'#04080a'],[1,'#0f1c1a']]);
+   TREES.forEach(([x,dd,s])=>{if(dd<.5){const X=((x+T*.004)%1.2-.1)*W;c2.fillStyle='#0f1d1b';c2.fillRect(X,0,W*.03*s,H)}});ridge(.88,.03,3,3,'#071010',0);
+   person(Math.min(W*.5,W*.05+T*W*.025),H*.885,H*.11,t,'#030606',{lamp:ST&&ST.lamp,big:.9,walk:T*W*.025<W*.45});
+   if(ST&&ST.help&&chI>=10)person(Math.min(W*.42,W*.0+T*W*.025),H*.885,H*.105,t+.5,'#030606');
+   TREES.forEach(([x,dd,s])=>{if(dd>=.5){const X=((x+T*.01)%1.2-.1)*W;c2.fillStyle='#020404';c2.fillRect(X,0,W*.06*s,H)}});
+   c2.strokeStyle='rgba(160,190,200,.28)';c2.lineWidth=d;c2.beginPath();RAIN.forEach(([x,y,s])=>{const Y=((y+t*1.4*s)%1)*H,X=x*W;c2.moveTo(X,Y);c2.lineTo(X-3*d,Y+14*d*s)});c2.stroke()},
+ plain(t,T){const W=sc.width,H=sc.height,d=DPR();sky([[0,'#0f1530'],[.55,'#33355c'],[.85,'#7a5a6e'],[1,'#c98a6a']]);stars(.35,t);ridge(.72,.04,2,4,'#25223a',0);
+   for(let i=0;i<6;i++){const x=W*(.62+i*.035),a=.5+.5*Math.sin(t*2+i);glow(x,H*.71,W*.03,'255,200,120',a*.8);disc(x,H*.71,d*1.6,'#ffd9a0')}
+   const fp=(T%9)/9;if(T>3){const fy=H*(.7-fp*.55);glow(W*.7,fy,W*.25,'255,120,90',.5*(1-fp));disc(W*.7,fy,d*3,'#ffd0c0')}
+   ridge(.92,.03,3,8,'#0d0c18',T*.01);person(W*.3,H*.905,H*.11,t,'#0d0c18',{lamp:ST&&ST.lamp});if(ST&&ST.help)person(W*.22,H*.905,H*.105,t+1,'#0d0c18')},
+ camp(t,T){const W=sc.width,H=sc.height,d=DPR();sky([[0,'#05070d'],[1,'#141a26']]);stars(.6,t);ridge(.7,.05,2,6,'#0c1018',0);
+   [[.15,.82,.22],[.7,.8,.25]].forEach(([x,y,w])=>{c2.fillStyle='#1b2216';c2.beginPath();c2.moveTo(W*(x-w/2),H*y);c2.lineTo(W*x,H*(y-w*.6));c2.lineTo(W*(x+w/2),H*y);c2.fill()});
+   c2.fillStyle='#07090c';c2.fillRect(0,H*.82,W,H*.18);const fl=.7+.3*Math.sin(t*13)*Math.sin(t*7);glow(W*.45,H*.82,W*.35,'255,150,60',.5*fl);
+   for(let i=0;i<3;i++){c2.fillStyle=['#ff9a3d','#ffc35a','#fff0b0'][i];c2.beginPath();c2.moveTo(W*(.42+i*.01),H*.84);c2.quadraticCurveTo(W*.45,H*(.72+i*.03-fl*.03),W*(.48-i*.01),H*.84);c2.fill()}
+   person(W*.32,H*.9,H*.12,t,'#07090c',{walk:false});person(W*.58,H*.9,H*.12,t,'#07090c',{walk:false});person(W*.66,H*.9,H*.11,t,'#07090c',{walk:false});
+   c2.strokeStyle='rgba(150,170,200,.18)';c2.lineWidth=d;c2.beginPath();RAIN.forEach(([x,y,s],i)=>{if(i%2)return;const Y=((y+t*1.3*s)%1)*H,X=x*W;c2.moveTo(X,Y);c2.lineTo(X-2*d,Y+12*d*s)});c2.stroke()},
+ parade(t,T){const W=sc.width,H=sc.height;sky([[0,'#5a8fc4'],[1,'#cfe0ee']]);disc(W*.2,H*.15,W*.06,'#fffbea');c2.fillStyle='#b9b2a2';c2.fillRect(0,H*.66,W,H*.34);
+   c2.fillStyle='#3a3d3a';c2.fillRect(W*.5,H*.1,W*.008,H*.56);const fl=Math.sin(t*3);
+   ['#2b4aa0','#f3f3f3','#d23a3a'].forEach((col,i)=>{c2.fillStyle=col;c2.beginPath();const x0=W*.508+i*W*.06;c2.moveTo(x0,H*.11+fl*i*2);c2.lineTo(x0+W*.06,H*.11+fl*(i+1)*2);c2.lineTo(x0+W*.06,H*.19+fl*(i+1)*2);c2.lineTo(x0,H*.19+fl*i*2);c2.fill()});
+   for(let r=0;r<3;r++)for(let i=0;i<9;i++)person(W*(.08+i*.105)+(r%2)*W*.03,H*(.78+r*.08),H*(.09+r*.012),t,`rgb(${40-r*8},${44-r*8},${36-r*8})`,{walk:false})},
+ dawn(t,T){const W=sc.width,H=sc.height,k=Math.min(T/8,1);sky([[0,`rgb(${40+k*80},${50+k*90},${90+k*90})`],[.7,`rgb(${180+k*60},${120+k*70},${110+k*40})`],[1,'#ffd8a0']]);
+   glow(W*.5,H*(.86-k*.1),W*.7,'255,210,150',.5+k*.3);disc(W*.5,H*(.86-k*.1),W*.07,'#fff0d0');ridge(.8,.05,2,4,'#5a4a5a',0);
+   c2.fillStyle='#2a2030';c2.fillRect(0,H*.88,W,H*.12);c2.fillRect(W*.05,H*.86,W*.9,H*.02);
+   for(let i=0;i<6;i++)person(W*(.2+i*.12),H*.88,H*.1,t+i,'#2a2030',{walk:false});c2.fillStyle='#c9b98f';c2.fillRect(W*.43,H*.79,W*.025,H*.035)}
+};
+function storyFrame(now,dt){if(!sCur){SD.camp(now/1000,0);return}sT+=dt;SD[sCur](reduce?0:now/1000,reduce?99:sT);
+  const W=sc.width,H=sc.height,v=c2.createRadialGradient(W/2,H/2,Math.min(W,H)*.3,W/2,H/2,Math.max(W,H)*.75);v.addColorStop(0,'rgba(0,0,0,0)');v.addColorStop(1,'rgba(0,0,0,.5)');c2.fillStyle=v;c2.fillRect(0,0,W,H)}
+
+/* =========================================================
+   GAME 3 — PRÉCISION (shooting range + leaderboard)
+   ========================================================= */
+const tc=$('#tc'),tx=tc.getContext('2d');let T3=null;
+function tirOpen(){show('g-tir');fitCanvas(tc);T3=null;tirOverlay('start');onFrame=tirFrame}
+function tirBoard(hl){const b=store.get('tir-board',[]),el=$('#t-board');el.innerHTML='';
+  if(!b.length){el.innerHTML='<div><span>Classement vide</span><span>—</span></div>'}
+  b.forEach((r,i)=>{const d=document.createElement('div');if(i===hl)d.className='me';d.innerHTML=`<span>${i+1}. ${r.n.replace(/</g,'&lt;')}</span><span>${r.s} pts</span>`;el.appendChild(d)});
+  $('#t-best').textContent=b.length?'Record '+b[0].s:''}
+function tirOverlay(kind,score){const o=$('#t-ov');o.hidden=false;$('#t-name').hidden=true;
+  if(kind==='start'){$('#t-ov-h').textContent='Stand de tir';$('#t-ov-p').textContent='15 cartouches. Touche la cible pour tirer. Le vent pousse ta balle : vise de l’autre côté de la flèche. Les petites cibles comptent double.';$('#t-go').textContent='Ouvrir le feu';$('#t-go').onclick=tirStart;tirBoard(-1)}
+  else{$('#t-ov-h').textContent=score+' points';const b=store.get('tir-board',[]);const qual=b.length<5||score>b[b.length-1].s;
+    $('#t-ov-p').textContent=qual?'Tu entres au classement ! Écris ton nom.':'Pas assez pour le top 5. Encore une série ?';
+    if(qual){$('#t-name').hidden=false;$('#t-go').textContent='Valider';$('#t-go').onclick=()=>{const n=($('#t-name').value.trim()||'Anonyme').slice(0,12);b.push({n,s:score});b.sort((a,c)=>c.s-a.s);const nb=b.slice(0,5);store.set('tir-board',nb);
+      $('#t-name').hidden=true;tirBoard(nb.findIndex(r=>r.n===n&&r.s===score));$('#t-ov-p').textContent='Enregistré.';$('#t-go').textContent='Rejouer';$('#t-go').onclick=tirStart}}
+    else{$('#t-go').textContent='Rejouer';$('#t-go').onclick=tirStart;tirBoard(-1)}}}
+function newTarget(){const W=tc.width,H=tc.height,small=Math.random()<.35,r=(small?.07:.12)*Math.min(W,H*1.2);
+  T3.tg={x:r+Math.random()*(W-2*r),y:r+H*.08+Math.random()*(H*.62-2*r),r,small,born:performance.now()};T3.wind=rnd(-3,3)}
+function tirStart(){$('#t-ov').hidden=true;T3={score:0,ammo:15,holes:[],tg:null,wind:0,fx:[]};newTarget();tirHud()}
+function tirHud(){$('#t-score').textContent=T3.score;$('#t-ammo').textContent=T3.ammo;$('#t-wind').textContent=T3.wind===0?'0':(T3.wind<0?'← ':'')+Math.abs(T3.wind)+(T3.wind>0?' →':'')}
+$('#range').addEventListener('pointerdown',e=>{if(!T3||T3.ammo<=0||!$('#t-ov').hidden)return;const rect=tc.getBoundingClientRect(),d=tc.width/rect.width;
+  const t=T3.tg,now=performance.now();const sway=Math.sin(now/300)*t.r*.08;
+  const x=(e.clientX-rect.left)*d+T3.wind*t.r*.16+sway,y=(e.clientY-rect.top)*d+Math.cos(now/410)*t.r*.06;
+  const dist=Math.hypot(x-t.x,y-t.y),ring=dist<=t.r?Math.max(1,10-Math.floor(dist/t.r*10)):0,pts=ring*(t.small?2:1);
+  T3.score+=pts;T3.ammo--;T3.holes.push({x,y});T3.fx.push({x,y,txt:ring?('+'+pts):'Raté',l:1,good:ring>=9});
+  if(navigator.vibrate)try{navigator.vibrate(20)}catch(_){}
+  tirHud();setTimeout(()=>{if(!T3)return;T3.holes=[];if(T3.ammo<=0){const s=T3.score;tirOverlay('end',s)}else{newTarget();tirHud()}},450)});
+function tirFrame(now){const W=tc.width,H=tc.height,d=DPR();tx.fillStyle='#1a1d16';tx.fillRect(0,0,W,H);
+  // range backdrop
+  const g=tx.createLinearGradient(0,0,0,H);g.addColorStop(0,'#2a2e22');g.addColorStop(.75,'#1a1d16');g.addColorStop(1,'#3a3426');tx.fillStyle=g;tx.fillRect(0,0,W,H);
+  tx.fillStyle='#4a4232';tx.fillRect(0,H*.8,W,H*.2);tx.strokeStyle='rgba(216,201,163,.1)';tx.lineWidth=d;for(let i=1;i<6;i++){tx.beginPath();tx.moveTo(W*i/6,0);tx.lineTo(W*i/6,H*.8);tx.stroke()}
+  if(!T3||!T3.tg)return;const t=T3.tg;
+  // target
+  const pop=Math.min(1,(now-t.born)/150);tx.save();tx.translate(t.x,t.y);tx.scale(pop,pop);
+  tx.fillStyle='#3a3426';tx.fillRect(-t.r*.06,t.r,t.r*.12,H);
+  for(let i=10;i>=1;i--){tx.fillStyle=i>6?'#efe6d4':(i%2?'#15130a':'#2a2a22');if(i<=2)tx.fillStyle='#e2553f';tx.beginPath();tx.arc(0,0,t.r*i/10,0,7);tx.fill();
+    tx.strokeStyle=i>6?'rgba(0,0,0,.35)':'rgba(239,230,212,.3)';tx.lineWidth=d;tx.stroke()}
+  if(t.small){tx.fillStyle='#f2c230';tx.font=`700 ${12*d}px Saira`;tx.textAlign='center';tx.fillText('×2',0,-t.r-6*d)}
+  tx.restore();
+  // wind flag
+  const wx=W-40*d,wy=24*d;tx.strokeStyle='#d8c9a3';tx.lineWidth=2*d;tx.beginPath();tx.moveTo(wx,wy);tx.lineTo(wx,wy+40*d);tx.stroke();
+  const len=T3.wind*8*d,fl=Math.sin(now/120)*2*d;tx.fillStyle='#f2c230';tx.beginPath();tx.moveTo(wx,wy);tx.lineTo(wx+len,wy+6*d+fl);tx.lineTo(wx,wy+12*d);tx.fill();
+  // holes and score pops
+  T3.holes.forEach(h=>{tx.fillStyle='#000';tx.beginPath();tx.arc(h.x,h.y,3.5*d,0,7);tx.fill();tx.strokeStyle='#f2c230';tx.lineWidth=1.5*d;tx.stroke()});
+  T3.fx=T3.fx.filter(f=>(f.l-=.02)>0);T3.fx.forEach(f=>{tx.globalAlpha=f.l;tx.fillStyle=f.good?'#f2c230':'#efe6d4';tx.font=`900 ${22*d}px "Big Shoulders Stencil Display",Impact`;tx.textAlign='center';tx.fillText(f.txt,f.x,f.y-30*d*(1-f.l)-14*d);tx.globalAlpha=1})}
+
+/* =========================================================
+   GAME 4 — CHEF DE SECTION (15 days, 4 gauges)
+   ========================================================= */
+const GAUGES=[['mor','Moral'],['for','Forme'],['dis','Discipline'],['pop','Popote']];
+const CARDS=[
+ {w:'Le sergent',t:'Il propose d’avancer le réveil à 4 h 30 pour un footing.',a:['Accepter',{for:2,mor:-1}],b:['Refuser',{dis:-1,mor:1}]},
+ {w:'L’adjudant',t:'Un élève est rentré de permission avec deux heures de retard.',a:['Sanctionner',{dis:2,mor:-1}],b:['Fermer les yeux',{mor:1,dis:-2}]},
+ {w:'Champion, popotier',t:'Chef, on fait une soirée crêpes ce soir ?',a:['Bonne idée',{mor:2,pop:-2}],b:['Plus tard',{pop:1,mor:-1}]},
+ {w:'Météo',t:'Il pleut des cordes. Un exercice dehors est prévu.',a:['On maintient',{for:1,dis:1,mor:-2}],b:['Cours en salle',{mor:1,for:-1}]},
+ {w:'Un élève',t:'Chef… je crois que je vais abandonner le stage.',a:['Lui parler seul à seul',{mor:1,dis:-1}],b:['Le laisser réfléchir',{mor:-2,dis:1}]},
+ {w:'Le capitaine',t:'Inspection surprise des chambrées demain matin.',a:['Nuit de ménage',{dis:2,for:-2}],b:['Ménage rapide',{for:1,dis:-1}]},
+ {w:'La section 312',t:'Ils vous défient au tir à la corde devant toute la compagnie.',a:['Relever le défi',{mor:2,for:-1}],b:['Décliner',{mor:-2,dis:1}]},
+ {w:'Champion, popotier',t:'Chef, le stock de café est vide.',a:['Cagnotte d’urgence',{pop:3,mor:-1}],b:['On tient sans café',{mor:-2,for:-1}]},
+ {w:'Le planning',t:'Marche de nuit de 20 km au programme.',a:['Rythme rapide',{for:1,dis:1,mor:-1}],b:['Rythme tranquille',{mor:1,for:-1,dis:-1}]},
+ {w:'La chambrée',t:'Deux élèves en viennent aux mains pour une histoire de lit.',a:['Corvée commune',{dis:2,mor:-1}],b:['Les faire discuter',{mor:1,dis:-1}]},
+ {w:'Le capitaine',t:'Il félicite la section pour son dernier exercice.',a:['Partager le mérite',{mor:2,dis:-1}],b:['Rester exigeant',{dis:2,mor:-1}]},
+ {w:'L’infirmerie',t:'La grippe circule. Trois élèves toussent.',a:['Repos pour tous',{for:2,dis:-1}],b:['On continue',{for:-2,dis:1}]},
+ {w:'Champion, popotier',t:'J’ai trouvé une promo sur les gâteaux. J’en prends dix paquets ?',a:['Fonce',{pop:2,mor:1,dis:-1}],b:['On économise',{pop:1,dis:1,mor:-1}]},
+ {w:'Le sergent',t:'Il propose une séance de sport en musique.',a:['Oui',{mor:1,for:1,dis:-1}],b:['Non, à l’ancienne',{dis:1,for:1,mor:-1}]},
+ {w:'Dimanche',t:'Quartier libre. Que fait la section ?',a:['Sortie en ville',{mor:2,pop:-1,dis:-1}],b:['Révisions au calme',{dis:1,for:1,mor:-1}]},
+ {w:'Un élève',t:'C’est mon anniversaire aujourd’hui, chef.',a:['Fête surprise',{mor:2,pop:-2}],b:['Un mot devant la section',{mor:1}]},
+ {w:'L’adjudant',t:'Il trouve des bonbons dans l’armoire de la popote.',a:['Couvrir le popotier',{mor:1,dis:-2}],b:['Faire tout ranger',{dis:1,pop:-1}]},
+ {w:'Le terrain',t:'Bivouac sous la pluie. Les sacs de couchage sont trempés.',a:['Feu et café pour tous',{mor:2,pop:-2}],b:['Serrer les dents',{dis:1,for:-2}]},
+ {w:'Le capitaine',t:'Il cherche une section volontaire pour une garde de week-end.',a:['Se porter volontaire',{dis:2,mor:-2}],b:['Laisser la 312 y aller',{mor:1,dis:-1}]},
+ {w:'Champion, popotier',t:'Chef, la section 312 propose d’échanger du café contre nos rations.',a:['Échanger',{pop:1,mor:1}],b:['Garder nos rations',{pop:-1,for:1}]}
+];
+const LOSE={mor:'La section a perdu le moral. Trois élèves abandonnent le stage.',for:'Épuisement général. Toute la section est à l’infirmerie.',dis:'Plus aucune discipline. Le capitaine te retire le commandement.',pop:'Plus de popote, plus de café. Mutinerie dans la chambrée.'};
+let C4=null;
+function chefOpen(){show('g-chef');const deck=CARDS.map((_,i)=>i).sort(()=>Math.random()-.5);C4={day:1,g:{mor:5,for:5,dis:5,pop:5},deck,last:{}};chefRender()}
+function chefRender(){const G=$('#gauges');G.innerHTML='';GAUGES.forEach(([k,n])=>{const v=C4.g[k],ch=C4.last[k]||0;const el=document.createElement('div');el.className='g'+(ch>0?' up':ch<0?' down':'');
+    el.innerHTML=`<div class="tube"><i class="${v<=2?'low':''}" style="height:${v*10}%"></i><em style="color:${v>=5?'#15130a':'#d8c9a3'}">${v}</em></div>${n}`;G.appendChild(el)});
+  const L=$('#c-line');L.innerHTML='';for(let i=1;i<=15;i++){const s=document.createElement('i');if(i<=C4.day)s.className='on';L.appendChild(s)}
+  $('#c-day').textContent='Jour '+Math.min(C4.day,15)+'/15';
+  const card=CARDS[C4.deck[(C4.day-1)%C4.deck.length]];$('#c-who').textContent=card.w;$('#c-txt').textContent=card.t;
+  const O=$('#c-opts');O.innerHTML='';[card.a,card.b].forEach(([lab,fx])=>{const b=document.createElement('button');b.className='copt';b.textContent=lab;b.onclick=()=>chefPick(fx);O.appendChild(b)})}
+function chefPick(fx){C4.last=fx;Object.entries(fx).forEach(([k,v])=>C4.g[k]=Math.max(0,Math.min(10,C4.g[k]+v)));
+  const dead=GAUGES.find(([k])=>C4.g[k]<=0);
+  if(dead)return chefEnd(false,LOSE[dead[0]]);
+  if(C4.day>=15)return chefEnd(true);C4.day++;chefRender()}
+function chefEnd(win,msg){C4.last={};const sum=Object.values(C4.g).reduce((a,b)=>a+b,0);
+  const rank=!win?'Relevé de ses fonctions':sum>=30?'Chef légendaire':sum>=22?'Bon chef':'Chef qui a tenu';
+  if(win){const prev=store.get('chef-score',0);if(sum>prev){store.set('chef-score',sum);store.set('chef-best',rank+' ('+sum+')')}}
+  chefRenderGaugesOnly();$('#c-who').textContent=win?'15 jours tenus':'Jour '+C4.day;$('#c-txt').innerHTML=`<span style="font-family:var(--stencil);font-size:34px;text-transform:uppercase;color:${win?'var(--hazard)':'var(--foe)'}">${rank}</span><br>${win?'La section 313 termine le stage. Total des jauges : '+sum+'/40.':msg}`;
+  const O=$('#c-opts');O.innerHTML='';const b=document.createElement('button');b.className='btn';b.textContent='Nouvelle section';b.onclick=chefOpen;O.appendChild(b)}
+function chefRenderGaugesOnly(){const G=$('#gauges');G.innerHTML='';GAUGES.forEach(([k,n])=>{const v=C4.g[k];const el=document.createElement('div');el.className='g';el.innerHTML=`<div class="tube"><i class="${v<=2?'low':''}" style="height:${v*10}%"></i><em style="color:${v>=5?'#15130a':'#d8c9a3'}">${v}</em></div>${n}`;G.appendChild(el)})}
+
+/* =========================================================
+   LOOP
+   ========================================================= */
+let lastT=performance.now();
+function loop(now){const dt=Math.min(.05,(now-lastT)/1000);lastT=now;if(onFrame)onFrame(now,dt);requestAnimationFrame(loop)}
+requestAnimationFrame(loop);
+addEventListener('resize',()=>{if(current==='g-story')fitCanvas(sc);if(current==='g-tir')fitCanvas(tc);if(current==='intro')fitCanvas(ic)});
+introStart();
+})();
+</script>
+</body></html>

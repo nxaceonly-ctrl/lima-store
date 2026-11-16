@@ -1,0 +1,281 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#243A6B"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="Ciel">
+<style>*,*::before,*::after{box-sizing:border-box}:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,-apple-system,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style></head><body>
+<title>Ciel</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,300;12..96,600;12..96,800&family=Figtree:wght@400;500;600&display=swap">
+<style>
+/* Layout: one phone-sized app column; the live sky IS the background, UI floats on it as frosted panels. */
+:root{
+  --ink:#f5f7fb;          /* text on sky */
+  --ink-soft:rgba(245,247,251,.72);
+  --glass:rgba(14,22,38,.34);
+  --glass-line:rgba(255,255,255,.16);
+  --night:#0d1524;        /* page ground */
+  --sun:#ffd38a;          /* single accent: sunlight */
+  --display:"Bricolage Grotesque",ui-sans-serif,system-ui,sans-serif;
+  --body:"Figtree",ui-sans-serif,system-ui,sans-serif;
+  color-scheme:dark;
+}
+html,body{height:100%}
+[hidden]{display:none!important}
+body{background:var(--night);color:var(--ink);font-family:var(--body);font-size:15px;overflow:hidden}
+.app{position:relative;height:100%;max-width:440px;margin:0 auto;overflow:hidden;background:var(--night)}
+#sky{position:absolute;inset:0;width:100%;height:100%;display:block}
+.scroll{position:absolute;inset:0;overflow-y:auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:18px 110px;display:flex;flex-direction:column;gap:14px}
+header{display:flex;justify-content:space-between;align-items:baseline}
+.brand{font-family:var(--display);font-weight:800;font-size:30px;letter-spacing:-.02em}
+.date{font-size:13px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.08em}
+.hero{padding-top:18vh;display:flex;flex-direction:column;gap:6px}
+.forecast{font-family:var(--display);font-weight:300;font-size:clamp(40px,12vw,54px);line-height:1;letter-spacing:-.03em;text-wrap:balance}
+.forecast b{font-weight:800}
+.sub{color:var(--ink-soft);font-size:15px}
+.panel{background:var(--glass);border:1px solid var(--glass-line);border-radius:22px;padding:16px;backdrop-filter:blur(18px) saturate(1.3);-webkit-backdrop-filter:blur(18px) saturate(1.3);display:flex;flex-direction:column;gap:14px}
+.row{display:flex;flex-direction:column;gap:6px}
+.row label{display:flex;justify-content:space-between;font-size:13px;font-weight:600;letter-spacing:.04em;text-transform:uppercase}
+.row label span{color:var(--ink-soft);font-weight:500;text-transform:none;letter-spacing:0}
+.ends{display:flex;justify-content:space-between;font-size:12px;color:var(--ink-soft)}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:30px;background:transparent}
+input[type=range]::-webkit-slider-runnable-track{height:6px;border-radius:6px;background:rgba(255,255,255,.25)}
+input[type=range]::-moz-range-track{height:6px;border-radius:6px;background:rgba(255,255,255,.25)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:26px;height:26px;margin-top:-10px;border-radius:50%;background:var(--ink);box-shadow:0 2px 10px rgba(0,0,0,.35)}
+input[type=range]::-moz-range-thumb{width:26px;height:26px;border:0;border-radius:50%;background:var(--ink)}
+input[type=range]:focus-visible{outline:2px solid var(--sun);outline-offset:2px;border-radius:8px}
+.word{width:100%;box-sizing:border-box;background:rgba(255,255,255,.1);border:1px solid var(--glass-line);border-radius:14px;padding:12px 14px;color:var(--ink);font:inherit;font-size:16px}
+.word::placeholder{color:var(--ink-soft)}
+.word:focus-visible{outline:2px solid var(--sun);outline-offset:1px}
+.btn{border:0;border-radius:999px;padding:14px 18px;font:600 16px var(--body);background:var(--ink);color:var(--night);cursor:pointer}
+.btn:focus-visible{outline:2px solid var(--sun);outline-offset:3px}
+.btn.saved{background:var(--sun)}
+h2{font-family:var(--display);font-weight:600;font-size:24px;margin:0;letter-spacing:-.01em}
+.chip{display:inline-block;font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:3px 8px;border-radius:999px;border:1px solid var(--glass-line);color:var(--ink-soft)}
+.grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.dow{font-size:11px;color:var(--ink-soft);text-align:center}
+.cell{position:relative;aspect-ratio:3/4;max-width:100%;border-radius:10px;overflow:hidden;border:1px solid var(--glass-line);padding:0;background:transparent;cursor:pointer}
+.cell canvas{width:100%;height:100%;display:block}
+.cell .n{position:absolute;left:5px;top:3px;font-size:11px;font-weight:600;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.5)}
+.cell.on{outline:2px solid var(--sun);outline-offset:1px}
+.cell:focus-visible{outline:2px solid var(--sun)}
+.detail{display:flex;gap:12px;align-items:center}
+.detail canvas{width:72px;height:96px;border-radius:12px;flex:none}
+.detail .t{display:flex;flex-direction:column;gap:3px;min-width:0}
+.detail .w{font-family:var(--display);font-weight:600;font-size:22px}
+.bars{display:flex;align-items:flex-end;gap:8px;height:120px}
+.bar{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;height:100%;justify-content:flex-end}
+.bar i{display:block;width:100%;border-radius:8px 8px 4px 4px;background:linear-gradient(var(--sun),rgba(255,211,138,.25))}
+.bar small{font-size:11px;color:var(--ink-soft)}
+.insight{font-size:16px;line-height:1.45}
+.insight b{color:var(--sun);font-weight:600}
+.legend{display:flex;flex-direction:column;gap:8px;font-size:14px;line-height:1.4;color:var(--ink-soft)}
+nav{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(16px + env(safe-area-inset-bottom,0px));display:flex;gap:4px;padding:5px;border-radius:999px;background:rgba(10,16,28,.55);border:1px solid var(--glass-line);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);z-index:5}
+nav button{border:0;background:transparent;color:var(--ink-soft);font:600 14px var(--body);padding:10px 14px;border-radius:999px;cursor:pointer;white-space:nowrap}
+nav button[aria-selected=true]{background:var(--ink);color:var(--night)}
+nav button:focus-visible{outline:2px solid var(--sun)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="app">
+  <canvas id="sky" aria-hidden="true"></canvas>
+
+  <!-- AUJOURD'HUI -->
+  <section class="scroll" id="v-today">
+    <header><div class="brand">Ciel</div><div class="date" id="today-date"></div></header>
+    <div class="hero">
+      <div class="forecast" id="forecast">Éclaircies</div>
+      <div class="sub" id="forecast-sub">Ton ciel intérieur, ce soir.</div>
+    </div>
+    <div class="panel">
+      <div class="row">
+        <label for="m">Humeur <span id="m-v"></span></label>
+        <input type="range" id="m" min="0" max="100" value="64">
+        <div class="ends"><span>Orage</span><span>Plein soleil</span></div>
+      </div>
+      <div class="row">
+        <label for="e">Énergie <span id="e-v"></span></label>
+        <input type="range" id="e" min="0" max="100" value="45">
+        <div class="ends"><span>Air immobile</span><span>Grand vent</span></div>
+      </div>
+      <div class="row">
+        <label for="c">Clarté <span id="c-v"></span></label>
+        <input type="range" id="c" min="0" max="100" value="70">
+        <div class="ends"><span>Brouillard</span><span>Limpide</span></div>
+      </div>
+      <input class="word" id="word" maxlength="24" placeholder="Un seul mot pour ta journée" value="Calme">
+      <button class="btn" id="save">Garder ce ciel</button>
+    </div>
+  </section>
+
+  <!-- MON CIEL -->
+  <section class="scroll" id="v-archive" hidden>
+    <header><div class="brand">Mon ciel</div><span class="chip">Exemple</span></header>
+    <div class="panel">
+      <h2 id="month-name"></h2>
+      <div class="grid" id="dows"></div>
+      <div class="grid" id="cal"></div>
+    </div>
+    <div class="panel detail" id="detail">
+      <canvas id="detail-c" width="144" height="192"></canvas>
+      <div class="t"><span class="date" id="d-date"></span><span class="w" id="d-word"></span><span class="sub" id="d-fc"></span></div>
+    </div>
+  </section>
+
+  <!-- TENDANCES -->
+  <section class="scroll" id="v-trends" hidden>
+    <header><div class="brand">Tendances</div><span class="chip">Exemple</span></header>
+    <div class="panel">
+      <h2>Humeur par jour</h2>
+      <div class="bars" id="bars"></div>
+      <p class="insight" id="insight1"></p>
+    </div>
+    <div class="panel">
+      <h2>Ta météo de la semaine</h2>
+      <p class="insight" id="insight2"></p>
+    </div>
+    <div class="panel">
+      <h2>Comment lire ton ciel</h2>
+      <div class="legend">
+        <div>☀️ Le soleil et les couleurs chaudes montent avec ton humeur. En dessous de 30, il pleut.</div>
+        <div>💨 Les nuages filent plus vite quand tu as de l'énergie.</div>
+        <div>🌫️ Le brouillard s'épaissit quand ta tête est embrouillée.</div>
+      </div>
+    </div>
+  </section>
+
+  <nav role="tablist">
+    <button role="tab" aria-selected="true" data-v="today">Aujourd'hui</button>
+    <button role="tab" aria-selected="false" data-v="archive">Mon ciel</button>
+    <button role="tab" aria-selected="false" data-v="trends">Tendances</button>
+  </nav>
+</div>
+
+<script>
+(function(){
+const $=s=>document.querySelector(s);
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+function rng(seed){return function(){seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+const lerp=(a,b,t)=>a+(b-a)*t;
+function mix(c1,c2,t){return c1.map((v,i)=>Math.round(lerp(v,c2[i],t)))}
+// sky stops: [top,bottom] at mood 0,25,50,75,100
+const STOPS=[
+  [[34,40,52],[70,76,88]],     // storm
+  [[62,74,96],[132,140,152]],  // grey
+  [[78,120,170],[214,176,160]],// dawn haze
+  [[46,128,206],[170,212,238]],// clear
+  [[36,124,214],[255,214,160]] // golden
+];
+function skyCols(m){const p=Math.min(3.999,m/25),i=Math.floor(p),f=p-i;return[mix(STOPS[i][0],STOPS[i+1][0],f),mix(STOPS[i][1],STOPS[i+1][1],f)]}
+const rgb=(c,a=1)=>`rgba(${c[0]},${c[1]},${c[2]},${a})`;
+
+function drawSky(ctx,w,h,d,t){
+  const {m,e,c,seed}=d, r=rng(seed);
+  const [top,bot]=skyCols(m);
+  const g=ctx.createLinearGradient(0,0,0,h);g.addColorStop(0,rgb(top));g.addColorStop(1,rgb(bot));
+  ctx.fillStyle=g;ctx.fillRect(0,0,w,h);
+  // sun
+  if(m>45){const a=(m-45)/55, sx=w*(.25+r()*.5), sy=h*(.32-a*.12), R=Math.min(w,h)*(.06+a*.05);
+    const sg=ctx.createRadialGradient(sx,sy,0,sx,sy,R*6);sg.addColorStop(0,`rgba(255,240,205,${.9*a})`);sg.addColorStop(.18,`rgba(255,215,150,${.45*a})`);sg.addColorStop(1,'rgba(255,215,150,0)');
+    ctx.fillStyle=sg;ctx.fillRect(0,0,w,h);ctx.fillStyle=`rgba(255,248,230,${.95*a})`;ctx.beginPath();ctx.arc(sx,sy,R,0,7);ctx.fill();}
+  // clouds
+  const n=Math.round((100-m)/11)+2, speed=.004+e/100*.05, shade=lerp(.35,1,m/100);
+  for(let k=0;k<n;k++){
+    const bx=r(), by=.08+r()*.6, sc=(.5+r()*.9)*Math.min(w,h)*.16, par=.5+r();
+    let x=((bx+t*speed*par)%1.4)*w*1.4/1.4*1.4 - w*.2; x=((bx*1.4 + t*speed*par)%1.4 - .2)*w;
+    const y=by*h, blobs=4+Math.floor(r()*4), base=Math.round(255*shade);
+    for(let b=0;b<blobs;b++){
+      const ox=(b-blobs/2)*sc*.55+(r()-.5)*sc*.3, oy=(r()-.5)*sc*.35, rr=sc*(.45+r()*.5);
+      const cg=ctx.createRadialGradient(x+ox,y+oy,0,x+ox,y+oy,rr);
+      cg.addColorStop(0,`rgba(${base},${base},${Math.min(255,base+8)},${.55+.3*(1-m/100)})`);cg.addColorStop(1,`rgba(${base},${base},${base},0)`);
+      ctx.fillStyle=cg;ctx.beginPath();ctx.arc(x+ox,y+oy,rr,0,7);ctx.fill();
+    }
+  }
+  // rain
+  if(m<30){const a=(30-m)/30, drops=Math.round(60+a*160), slant=e/100*.6;
+    ctx.strokeStyle=`rgba(210,222,240,${.25+.35*a})`;ctx.lineWidth=Math.max(1,w/400);ctx.beginPath();
+    for(let i=0;i<drops;i++){const x0=r()*w*1.2-w*.1, y0=((r()+t*.9*(1+r()))%1)*h, L=h*(.025+r()*.03);ctx.moveTo(x0,y0);ctx.lineTo(x0-L*slant,y0+L)}
+    ctx.stroke();}
+  // fog
+  const f=(100-c)/100;
+  if(f>.05){const fg=ctx.createLinearGradient(0,h*(1-f*.9),0,h);fg.addColorStop(0,'rgba(235,238,244,0)');fg.addColorStop(1,`rgba(235,238,244,${.75*f})`);ctx.fillStyle=fg;ctx.fillRect(0,0,w,h);
+    ctx.fillStyle=`rgba(235,238,244,${.22*f})`;ctx.fillRect(0,0,w,h);}
+}
+
+function forecast(m,e,c){
+  let a = m<15?'Orage':m<30?'Averses':m<45?'Ciel gris':m<60?'Éclaircies':m<80?'Beau temps':'Plein soleil';
+  let b = e<25?'air immobile':e<60?'brise légère':'vent fort';
+  let s = c<35?', brouillard en fin de journée':c<65?', quelques brumes':', visibilité parfaite';
+  return [a, b[0].toUpperCase()+b.slice(1)+s+'.'];
+}
+
+// ----- data -----
+const WORDS=['Calme','Fatigué','Fier','Stressé','Léger','Pressé','Content','Lent','Motivé','Seul','Rires','Lourd','Inspiré','Repos','Sport','Doute','Famille','Nuit courte','Soleil','Libre','Concentré','Pluie','Ami','Vide','Élan','Douceur','Victoire','Tranquille'];
+const now=new Date(); const DAYS=['Lun','Mar','Mer','Jeu','Ven','Sam','Dim'];
+const MONTHS=['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
+function sample(){const r=rng(7),out=[];for(let i=27;i>=1;i--){const d=new Date(now);d.setDate(now.getDate()-i);const wd=(d.getDay()+6)%7;
+  const m=Math.max(4,Math.min(98,Math.round(42+r()*40+(wd>=5?14:0)-(wd===0?12:0)+(i<8?8:0))));
+  out.push({date:d.toISOString().slice(0,10),m,e:Math.round(15+r()*80),c:Math.round(20+r()*78),w:WORDS[(i*7)%WORDS.length],seed:1000+i,sample:true})}return out}
+let entries=sample();
+let mine={};
+try{mine=JSON.parse(localStorage.getItem('ciel-today')||'{}')||{}}catch(_){}
+const todayKey=now.toISOString().slice(0,10);
+if(mine.date===todayKey){['m','e','c'].forEach(k=>$('#'+k).value=mine[k]);$('#word').value=mine.w||''}
+
+// ----- today view -----
+const sky=$('#sky'),sctx=sky.getContext('2d');
+let cur={m:+$('#m').value,e:+$('#e').value,c:+$('#c').value,seed:4242};
+function fit(){const dpr=Math.min(2,devicePixelRatio||1);sky.width=sky.clientWidth*dpr;sky.height=sky.clientHeight*dpr}
+addEventListener('resize',fit);fit();
+$('#today-date').textContent=DAYS[(now.getDay()+6)%7]+' '+now.getDate()+' '+MONTHS[now.getMonth()];
+function upd(){cur.m=+$('#m').value;cur.e=+$('#e').value;cur.c=+$('#c').value;
+  const [a,b]=forecast(cur.m,cur.e,cur.c);$('#forecast').innerHTML='<b>'+a+'</b>';$('#forecast-sub').textContent=b;
+  $('#m-v').textContent=cur.m;$('#e-v').textContent=cur.e;$('#c-v').textContent=cur.c;
+  $('#save').textContent='Garder ce ciel';$('#save').classList.remove('saved');}
+['m','e','c'].forEach(k=>$('#'+k).addEventListener('input',upd));$('#word').addEventListener('input',upd);upd();
+$('#save').addEventListener('click',()=>{const rec={date:todayKey,m:cur.m,e:cur.e,c:cur.c,w:$('#word').value.trim()||'—'};
+  try{localStorage.setItem('ciel-today',JSON.stringify(rec))}catch(_){}
+  $('#save').textContent='Ciel gardé ✓';$('#save').classList.add('saved');buildArchive();});
+let viewData=()=>cur, t0=performance.now();
+(function loop(ts){const t=reduce?0:(ts-t0)/1000;drawSky(sctx,sky.width,sky.height,viewData(),t);requestAnimationFrame(loop)})(t0);
+
+// ----- archive -----
+function allEntries(){const rec={date:todayKey,m:cur.m,e:cur.e,c:cur.c,w:$('#word').value.trim()||'—',seed:4242};return entries.concat([rec])}
+DAYS.forEach(d=>{const s=document.createElement('div');s.className='dow';s.textContent=d[0];$('#dows').appendChild(s)});
+let selected=null;
+function showDetail(en){const c=$('#detail-c');drawSky(c.getContext('2d'),c.width,c.height,en,3);
+  const d=new Date(en.date+'T12:00');$('#d-date').textContent=DAYS[(d.getDay()+6)%7]+' '+d.getDate()+' '+MONTHS[d.getMonth()];
+  $('#d-word').textContent=en.w;$('#d-fc').textContent=forecast(en.m,en.e,en.c)[0]+' · humeur '+en.m;}
+function buildArchive(){const cal=$('#cal');cal.innerHTML='';const list=allEntries();
+  $('#month-name').textContent='Les 28 derniers jours';
+  const first=new Date(list[0].date+'T12:00'), pad=(first.getDay()+6)%7;
+  for(let i=0;i<pad;i++)cal.appendChild(document.createElement('div'));
+  list.forEach((en,idx)=>{const b=document.createElement('button');b.className='cell';b.setAttribute('aria-label',en.date+' '+en.w);
+    const cv=document.createElement('canvas');cv.width=90;cv.height=120;drawSky(cv.getContext('2d'),90,120,en,3);
+    const n=document.createElement('span');n.className='n';n.textContent=new Date(en.date+'T12:00').getDate();
+    b.append(cv,n);b.onclick=()=>{document.querySelectorAll('.cell.on').forEach(x=>x.classList.remove('on'));b.classList.add('on');selected=en;showDetail(en)};
+    if(idx===list.length-1){b.classList.add('on');selected=en}
+    cal.appendChild(b)});
+  showDetail(selected&&selected.date!==todayKey?selected:list[list.length-1]);}
+buildArchive();
+
+// ----- trends -----
+function buildTrends(){const list=allEntries(),sum=Array(7).fill(0),cnt=Array(7).fill(0);
+  list.forEach(en=>{const wd=(new Date(en.date+'T12:00').getDay()+6)%7;sum[wd]+=en.m;cnt[wd]++});
+  const avg=sum.map((s,i)=>cnt[i]?Math.round(s/cnt[i]):0),max=Math.max(...avg),bars=$('#bars');bars.innerHTML='';
+  avg.forEach((v,i)=>{const b=document.createElement('div');b.className='bar';b.innerHTML=`<small>${v}</small><i style="height:${Math.max(6,v/100*85)}%"></i><small>${DAYS[i]}</small>`;bars.appendChild(b)});
+  const best=avg.indexOf(max),worst=avg.indexOf(Math.min(...avg.filter(v=>v>0)));
+  const full=['lundi','mardi','mercredi','jeudi','vendredi','samedi','dimanche'];
+  $('#insight1').innerHTML=`Ton ciel est le plus lumineux le <b>${full[best]}</b> et le plus chargé le <b>${full[worst]}</b>.`;
+  const last=list.slice(-7),prev=list.slice(-14,-7),a=last.reduce((s,x)=>s+x.m,0)/7,p=prev.reduce((s,x)=>s+x.m,0)/7;
+  $('#insight2').innerHTML= a>p+3?`Ça se dégage : ton humeur moyenne a monté de <b>${Math.round(a-p)} points</b> par rapport à la semaine d'avant.`:a<p-3?`Temps plus couvert : ton humeur a baissé de <b>${Math.round(p-a)} points</b>. Pense à une pause qui te fait du bien.`:`Temps stable : ton humeur reste autour de <b>${Math.round(a)}</b> cette semaine.`;}
+buildTrends();
+
+// ----- tabs -----
+document.querySelectorAll('nav button').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('nav button').forEach(x=>x.setAttribute('aria-selected',x===b));
+  ['today','archive','trends'].forEach(v=>$('#v-'+v).hidden=v!==b.dataset.v);
+  if(b.dataset.v!=='today'){buildArchive();buildTrends()}
+  viewData = b.dataset.v==='archive' ? ()=>selected||cur : ()=>cur;
+}));
+})();
+</script>
+</body></html>
