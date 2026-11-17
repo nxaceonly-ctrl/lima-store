@@ -444,3 +444,86 @@ body{letter-spacing:-.022em}
 #isle:empty{display:none}
 #isle.under{transform:translateX(-26%);filter:brightness(.9)}
 .intro #isle{opacity:0;transform:scale(1.1)}
+
+/* ================= ISLAND v2 (v11) ================= */
+.bld b em{display:block;font-style:normal;font-size:10px;font-weight:600;opacity:.6;text-align:center;margin-top:-1px}
+.bld .floor{display:none;position:absolute;top:40px;width:76px;height:28px;border-radius:14px;background:linear-gradient(180deg,color-mix(in srgb,var(--c) 55%,#fff),color-mix(in srgb,var(--c) 85%,#000));box-shadow:0 5px 0 color-mix(in srgb,var(--c) 60%,#000)}
+.bld.lv1 .tile{width:58px}
+.bld.lv1 .plinth{width:70px;top:52px}
+.bld.lv3 .floor{display:block}
+.bld.lv3 .tile{width:78px;margin-top:-18px}
+.bld.lv3 b{margin-top:34px}
+.bld .crown{position:absolute;top:-16px;left:50%;width:26px;height:18px;margin-left:-13px;background:linear-gradient(#FFE27A,#FFB000);clip-path:polygon(0 100%,0 30%,25% 60%,50% 0,75% 60%,100% 30%,100% 100%);filter:drop-shadow(0 2px 2px rgba(0,0,0,.3))}
+.avatar2{position:absolute;width:56px;margin:-62px 0 0 -28px;z-index:2;pointer-events:none;transition:filter .3s}
+.avatar2 svg{width:56px;height:65px;display:block;animation:avIdle 2.4s ease-in-out infinite}
+.avatar2.left svg{transform:scaleX(-1)}
+@keyframes avIdle{50%{transform:translateY(-2px) scale(1.02,.98)}}
+.avatar2.walk svg{animation:avWalk .32s ease-in-out infinite}
+.avatar2.left.walk svg{animation-name:avWalkL}
+@keyframes avWalk{50%{transform:translateY(-6px) rotate(4deg)}}
+@keyframes avWalkL{0%,100%{transform:scaleX(-1)}50%{transform:scaleX(-1) translateY(-6px) rotate(4deg)}}
+.avatar2 .eye{animation:blink 4s infinite}
+@keyframes blink{0%,94%,100%{transform:none}97%{transform:scaleY(.1)}}
+.avatar2 .eye{transform-box:fill-box;transform-origin:center}
+.avatar2 b{display:block;text-align:center;margin-top:-2px;font-size:11px;font-weight:800;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,.45)}
+.tapmark{position:absolute;width:40px;height:20px;margin:-10px 0 0 -20px;border-radius:50%;border:3px solid rgba(255,255,255,.9);animation:tapm .7s ease-out forwards;pointer-events:none;z-index:1}
+@keyframes tapm{from{transform:scale(.3);opacity:1}to{transform:scale(1.3);opacity:0}}
+.decos{position:absolute;inset:0;pointer-events:none}
+.deco{position:absolute;transform:translate(-50%,-90%);pointer-events:auto;z-index:1}
+.deco svg{display:block}
+.d-flowers svg{width:44px}.d-tree svg{width:48px}.d-palm svg{width:50px}.d-lamp svg{width:28px}.d-bench svg{width:52px}.d-bridge svg{width:110px}.d-statue svg{width:46px}.d-lighthouse svg{width:52px}
+.d-bridge{transform:translate(-50%,-50%)}
+.deco.pop{animation:dpop .6s cubic-bezier(.3,1.6,.5,1)}
+@keyframes dpop{from{transform:translate(-50%,-90%) scale(0)}}
+.building .deco{outline:2px dashed rgba(255,255,255,.7);outline-offset:2px;border-radius:8px}
+.island.night .deco .lit{filter:drop-shadow(0 0 8px #FFE27A) drop-shadow(0 0 18px #FFC93C)}
+.chest{position:absolute;width:58px;margin:-44px 0 0 -29px;z-index:2;animation:bob 2.2s ease-in-out infinite}
+.chest svg{width:58px;display:block;overflow:visible}
+.chest .lid{transform-box:fill-box;transform-origin:50% 100%;transition:transform .45s cubic-bezier(.3,1.6,.5,1)}
+.chest.open .lid{transform:rotate(-28deg) translate(-4px,-8px)}
+.chest .glint{position:absolute;left:50%;top:-6px;width:12px;height:12px;margin-left:-6px;background:#fff;clip-path:polygon(50% 0,62% 38%,100% 50%,62% 62%,50% 100%,38% 62%,0 50%,38% 38%);animation:glint 1.6s ease-in-out infinite}
+@keyframes glint{50%{transform:scale(1.6) rotate(45deg);opacity:.6}}
+.chest.gone{transition:opacity .5s,transform .5s;opacity:0;transform:scale(.6)}
+.flycoin{position:absolute;left:50%;top:10px;width:18px;margin-left:-9px;animation:flyc .9s cubic-bezier(.2,.8,.3,1) forwards;pointer-events:none}
+@keyframes flyc{0%{transform:none;opacity:1}100%{transform:translate(var(--dx),var(--dy));opacity:0}}
+.iright{display:flex;align-items:center;gap:8px}
+.coins{display:flex;align-items:center;gap:6px;height:38px;padding:0 12px 0 9px;border-radius:99px;background:var(--glass);-webkit-backdrop-filter:blur(20px) saturate(180%);backdrop-filter:blur(20px) saturate(180%);box-shadow:var(--glassshadow),inset 0 0 0 .5px var(--glassline);font-weight:800;font-size:16px;color:var(--label);font-variant-numeric:tabular-nums}
+.coins.bump{animation:cbump .5s cubic-bezier(.3,1.8,.5,1)}
+@keyframes cbump{40%{transform:scale(1.18)}}
+.wxchip{position:absolute;left:max(16px,env(safe-area-inset-left,0px));top:calc(env(safe-area-inset-top,0px) + 66px);z-index:5;padding:6px 12px;border-radius:99px;font-size:13px;font-weight:600;color:var(--label);background:var(--glass);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);box-shadow:inset 0 0 0 .5px var(--glassline)}
+.ibuild{position:absolute;left:max(16px,env(safe-area-inset-left,0px));bottom:calc(92px + env(safe-area-inset-bottom,0px));width:46px;height:46px;border-radius:50%;display:grid;place-items:center;color:var(--label);background:var(--glass);-webkit-backdrop-filter:blur(20px) saturate(180%);backdrop-filter:blur(20px) saturate(180%);box-shadow:var(--glassshadow),inset 0 0 0 .5px var(--glassline);z-index:5}
+.building .ibuild,.building .irecenter{opacity:0;pointer-events:none}
+.ishop{position:absolute;left:max(10px,env(safe-area-inset-left,0px));right:max(10px,env(safe-area-inset-right,0px));bottom:calc(84px + env(safe-area-inset-bottom,0px));max-width:520px;margin:0 auto;padding:12px 0 10px;border-radius:24px;background:var(--glass);-webkit-backdrop-filter:blur(26px) saturate(190%);backdrop-filter:blur(26px) saturate(190%);box-shadow:var(--glassshadow),inset 0 0 0 .5px var(--glassline);z-index:7;transform:translateY(170%);transition:transform .55s var(--spring)}
+.ishop.show{transform:none}
+.shh2{display:flex;align-items:center;gap:10px;padding:0 14px 8px}
+.shh2 b{flex:1;font-size:17px;font-weight:700}
+.shh2 span{display:flex;align-items:center;gap:4px;font-weight:800;font-variant-numeric:tabular-nums}
+.shh2 em{font-style:normal}
+.shopr{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding:2px 14px 4px}
+.shopr::-webkit-scrollbar{display:none}
+.sitem{flex:none;width:76px;padding:8px 4px;border-radius:16px;background:var(--fill);display:flex;flex-direction:column;align-items:center;gap:2px;transition:transform .3s var(--spring)}
+.sitem span{height:44px;display:grid;place-items:center}
+.sitem span svg{width:46px;height:40px}
+.sitem b{font-size:12px;font-weight:600}
+.sitem small{display:flex;align-items:center;gap:2px;font-size:12px;font-weight:700;color:var(--label2)}
+.sitem small svg{width:13px;height:13px}
+.sitem.on{background:var(--blue);color:#fff;transform:scale(1.05)}
+.sitem.on small{color:#fff}
+.sitem.poor{opacity:.45}
+.shint{margin:6px 14px 0;font-size:13px;color:var(--label2)}
+.ctoast{position:absolute;left:50%;top:calc(env(safe-area-inset-top,0px) + 108px);transform:translateX(-50%);z-index:8;display:flex;align-items:center;gap:8px;padding:9px 16px;border-radius:99px;background:rgba(29,29,31,.88);color:#fff;font-size:14px;font-weight:600;white-space:nowrap;animation:ctin .45s cubic-bezier(.3,1.6,.5,1),ctout .4s ease 1.8s forwards}
+@keyframes ctin{from{transform:translate(-50%,-20px) scale(.8);opacity:0}}
+@keyframes ctout{to{opacity:0;transform:translate(-50%,-10px)}}
+/* weather layers */
+.island::after{content:"";position:absolute;inset:0;pointer-events:none;z-index:4;opacity:0;transition:opacity 1s}
+.island.wx-rain::after,.island.wx-storm::after{opacity:1;background-image:repeating-linear-gradient(105deg,transparent 0 22px,rgba(220,235,255,.45) 22px 23px,transparent 23px 47px);background-size:120px 120px;animation:rain .45s linear infinite}
+@keyframes rain{to{background-position:-30px 120px}}
+.island.wx-snow::after{opacity:1;background-image:radial-gradient(circle,#fff 0 2px,transparent 3px),radial-gradient(circle,rgba(255,255,255,.8) 0 1.5px,transparent 2.5px);background-size:70px 70px,43px 43px;animation:snow 6s linear infinite}
+@keyframes snow{to{background-position:20px 280px,-30px 172px}}
+.island.wx-fog::after{opacity:1;background:linear-gradient(180deg,rgba(255,255,255,.55),rgba(255,255,255,.25) 50%,rgba(255,255,255,.5));animation:none}
+.island.wx-cloud .cloud{opacity:1;background:rgba(255,255,255,.9)}
+.island.wx-rain .iworld canvas,.island.wx-storm .iworld canvas,.island.wx-cloud .iworld canvas{filter:saturate(.8) brightness(.88)}
+.island.wx-sun::after{opacity:1;background:radial-gradient(60% 40% at 90% 0%,rgba(255,236,170,.55),transparent 70%)}
+.island.wx-storm{animation:flash 7s infinite}
+@keyframes flash{0%,91%,95%,100%{filter:none}92%,94%{filter:brightness(1.8)}}
+.island.wx-snow .iworld canvas{filter:saturate(.6) brightness(1.08)}
