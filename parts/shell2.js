@@ -3,7 +3,7 @@ var cur=null,GM=null,S=null,tab=null,tick=null,lastT=0,lastSig="",lastSave=0,she
 function openGame(id,skipHash){
  closeOverlay();cur=id;GM=GAMES[id];S=gload(id);tab=GM.tabs[0][0];sheetFn=null;
  var gm=$("#game");gm.className=GM.cls;gm.hidden=false;document.body.style.overflow="hidden";
- gm.innerHTML='<div class="wrap"><div class="g-top"><button class="g-back" data-back="1" aria-label="Retour au store"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 5l-7 7 7 7"/></svg></button><div class="g-title"><small>Lima Store · Tycoon</small><b>'+GM.full+'</b></div></div>'
+ gm.innerHTML='<div class="wrap"><div class="g-top"><button class="g-back" data-back="1" aria-label="Retour au store"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 5l-7 7 7 7"/></svg></button><div class="g-title"><small>Prisme · Tycoon</small><b>'+GM.full+'</b></div></div>'
   +'<div class="g-hud"><div class="chips" id="gTop"></div><div class="g-rank"><span>Rang : <b id="gRank"></b></span><span id="gNext"></span></div><div class="bar"><i id="gBar"></i></div></div>'
   +'<div class="tabs" id="gTabs"></div><div id="gBody"></div></div><div id="gSheet"></div>';
  // offline
@@ -77,20 +77,24 @@ window.addEventListener("pagehide",function(){if(cur)gsave(cur,S)});
 window.addEventListener("resize",function(){if(!cur){var b=$(".feat");drawFeat(b?b.dataset.game:"bastion")}});
 
 /* ---------- LOGO + INTRO ---------- */
-/* Lima mark: a lime slice seen from above. 8 rounded segments, pith ring, rind. */
-function limeSegs(cls){var s="",n=8,ri=4,ro=25.2,g=11;for(var i=0;i<n;i++){var a0=(i*360/n+g/2-90)*Math.PI/180,a1=((i+1)*360/n-g/2-90)*Math.PI/180;var p=function(r,a){return (50+r*Math.cos(a)).toFixed(2)+" "+(50+r*Math.sin(a)).toFixed(2)};s+='<path class="'+(cls||"")+'" style="--k:'+i+'" d="M'+p(ri+1.5,(a0+a1)/2)+" L"+p(ro,a0)+" A"+ro+" "+ro+" 0 0 1 "+p(ro,a1)+' Z" fill="url(#lmF)" stroke="url(#lmF)" stroke-width="2.2" stroke-linejoin="round"/>'}return s}
-function limeDefs(){return '<defs><radialGradient id="lmF" cx="50" cy="50" r="27" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#F3FFB8"/><stop offset=".55" stop-color="#C6EE5A"/><stop offset="1" stop-color="#86C92E"/></radialGradient><linearGradient id="lmR" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8FD94A"/><stop offset=".6" stop-color="#3FA535"/><stop offset="1" stop-color="#1F7A2C"/></linearGradient><radialGradient id="lmB" cx=".3" cy=".2" r="1"><stop offset="0" stop-color="#26332A"/><stop offset="1" stop-color="#0B0F0C"/></radialGradient></defs>'}
-function limaLogo(bg){return '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">'+limeDefs()+(bg?'<rect width="100" height="100" fill="url(#lmB)"/>':"")+'<circle cx="50" cy="50" r="34" fill="url(#lmR)"/><circle cx="50" cy="50" r="30.6" fill="#F8FDEB"/>'+limeSegs()+'<circle cx="50" cy="50" r="2.4" fill="#F8FDEB"/><path d="M27 36a27 27 0 0 1 17-14" fill="none" stroke="#fff" stroke-opacity=".55" stroke-width="2.2" stroke-linecap="round"/></svg>'}
+/* Prisme mark: a rounded crystal triangle split into three spectrum facets, with a spark of light at its heart. */
+var PF=[["M50 16 86 78 50 57.3Z","#FFB340","#FF2D55","1 0"],["M86 78 14 78 50 57.3Z","#34E07A","#0A84FF","0 1"],["M14 78 50 16 50 57.3Z","#5E5CE6","#D35CFF","-1 0"]];
+function prismDefs(){return '<defs><radialGradient id="pmB" cx=".5" cy=".42" r=".75"><stop offset="0" stop-color="#1E1E3A"/><stop offset="1" stop-color="#06060B"/></radialGradient>'+PF.map(function(f,i){return '<linearGradient id="pmF'+i+'" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="'+f[1]+'"/><stop offset="1" stop-color="'+f[2]+'"/></linearGradient>'}).join("")+'<radialGradient id="pmS"><stop offset="0" stop-color="#fff"/><stop offset=".35" stop-color="#fff" stop-opacity=".6"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient><linearGradient id="pmE" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#fff"/></linearGradient><filter id="pmBl" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="3"/></filter></defs>'}
+function prismFacets(cls){return PF.map(function(f,i){var d=f[3].split(" ");return '<path class="'+(cls||"")+'" style="--dx:'+(d[0]*30)+'px;--dy:'+(d[1]*30-(i===0?0:0))+'px;--r:'+(i*40-40)+'deg" d="'+f[0]+'" fill="url(#pmF'+i+')" stroke="url(#pmF'+i+')" stroke-width="7" stroke-linejoin="round"/>'}).join("")}
+var PCUTS='<path d="M50 57.3 50 16M50 57.3 86 78M50 57.3 14 78" stroke="#0B0B16" stroke-opacity=".55" stroke-width="2.2" stroke-linecap="round"/>';
+function prismSpark(cls){return '<g class="'+(cls||"")+'"><circle cx="50" cy="57.3" r="13" fill="url(#pmS)" opacity=".85"/><path d="M50 47.5Q51 56.3 59.8 57.3 51 58.3 50 67.1 49 58.3 40.2 57.3 49 56.3 50 47.5Z" fill="#fff"/></g>'}
+function limaLogo(bg){return '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">'+prismDefs()+(bg?'<rect width="100" height="100" fill="url(#pmB)"/>':"")+'<g opacity=".55" filter="url(#pmBl)">'+prismFacets()+'</g>'+prismFacets()+PCUTS+'<path d="M45 27 30 54" stroke="#fff" stroke-opacity=".45" stroke-width="2" stroke-linecap="round"/>'+prismSpark()+'</svg>'}
 function playIntro(){
  if(REDUCE||GAMES[location.hash.slice(1)])return;
- var h='<div id="lintro" role="presentation"><div class="lstage"><svg class="lmark" viewBox="0 0 100 100">'+limeDefs()+'<defs><clipPath id="lmC"><circle cx="50" cy="50" r="34"/></clipPath><linearGradient id="lmS" x1="0" x2="1"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".5" stop-color="#fff" stop-opacity=".75"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient></defs>'
-  +'<g class="lspin"><circle class="lrind" cx="50" cy="50" r="32.3" fill="none" stroke="url(#lmR)" stroke-width="3.4" pathLength="100"/><circle class="lpith" cx="50" cy="50" r="30.6" fill="#F8FDEB"/>'+limeSegs("lseg")+'<circle class="lpith" cx="50" cy="50" r="2.4" fill="#F8FDEB"/></g>'
-  +'<g clip-path="url(#lmC)"><rect class="lshine" x="-60" y="-10" width="40" height="120" fill="url(#lmS)" transform="rotate(20 50 50)"/></g></svg>'
-  +'<div class="lword">'+"Lima Store".split("").map(function(c,k){return '<span style="--k:'+k+'">'+(c===" "?"&nbsp;":c)+'</span>'}).join("")+'</div><div class="ltag">Tes apps. Tes jeux. Au même endroit.</div></div></div>';
+ var h='<div id="lintro" class="pz" role="presentation"><div class="pgrid"></div><div class="pflash"></div><div class="lstage"><svg class="pmark" viewBox="0 0 100 100" overflow="visible">'+prismDefs()
+  +'<circle class="pring" cx="50" cy="57.3" r="20" fill="none" stroke="#fff" stroke-width="1.2"/><circle class="pring r2" cx="50" cy="57.3" r="20" fill="none" stroke="#9FB4FF" stroke-width="1"/>'
+  +'<path class="pbeam" d="M-90 57.3H50" stroke="url(#pmE)" stroke-width="2.6" stroke-linecap="round" pathLength="100"/>'
+  +'<g class="pglow" filter="url(#pmBl)">'+prismFacets("pfac")+'</g>'+prismFacets("pfac")+'<g class="pcuts">'+PCUTS+'</g>'+prismSpark("pspark")+'</svg>'
+  +'<div class="pword" data-t="PRISME">PRISME</div><div class="ptag">Toutes tes apps. Une seule lumière.</div></div><div class="pwipe"></div></div>';
  document.body.insertAdjacentHTML("beforeend",h);document.documentElement.classList.add("intro");
  var el=document.getElementById("lintro"),gone=false;
- function end(){if(gone)return;gone=true;el.classList.add("out");document.documentElement.classList.remove("intro");setTimeout(function(){el.remove()},700)}
- el.addEventListener("click",end);setTimeout(end,3300);
+ function end(){if(gone)return;gone=true;el.classList.add("out");document.documentElement.classList.remove("intro");setTimeout(function(){el.remove()},800)}
+ el.addEventListener("click",end);setTimeout(end,3600);
 }
 
 applyLook();trackDay();renderStore();playIntro();setTimeout(checkTrophies,3200);
