@@ -1,4 +1,4 @@
-<title>Lima Store</title>
+<title>Prisme</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Familjen+Grotesk:wght@500;600;700&family=Schibsted+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Limelight&family=Saira+Condensed:wght@500;700;800&display=swap">
@@ -710,6 +710,43 @@ body{letter-spacing:-.022em}
 @keyframes lmW{to{opacity:1;filter:blur(0);transform:none}}
 .ltag{margin-top:10px;font-size:17px;letter-spacing:-.01em;color:#86868B;opacity:0;animation:lmFade .9s ease 2.35s forwards}
 @keyframes lmFade{to{opacity:1}}
+
+/* ================= PRISME intro (v8) ================= */
+#lintro.pz{background:radial-gradient(90% 60% at 50% 42%,#14142A 0%,#050509 70%);overflow:hidden}
+#lintro.pz.out{opacity:0;transform:scale(1.12);filter:blur(6px);transition:opacity .7s ease .15s,transform .9s cubic-bezier(.4,0,.2,1),filter .7s}
+.pgrid{position:absolute;left:-50%;right:-50%;bottom:-8%;height:58%;transform:perspective(320px) rotateX(72deg);transform-origin:50% 100%;background-image:linear-gradient(rgba(150,160,255,.55) 1px,transparent 1px),linear-gradient(90deg,rgba(150,160,255,.55) 1px,transparent 1px);background-size:44px 44px;-webkit-mask-image:linear-gradient(to top,#000 10%,transparent 85%);mask-image:linear-gradient(to top,#000 10%,transparent 85%);opacity:0;animation:pgIn 1.2s ease .1s forwards,pgRun 1.4s linear infinite}
+@keyframes pgIn{to{opacity:.55}}
+@keyframes pgRun{to{background-position:0 44px}}
+.pflash{position:absolute;inset:0;background:radial-gradient(circle at 50% 42%,#fff 0%,rgba(255,255,255,.4) 25%,transparent 60%);opacity:0;animation:pfl .9s ease-out 1.1s}
+@keyframes pfl{10%{opacity:.85}100%{opacity:0}}
+.pmark{width:170px;height:170px;overflow:visible;animation:pmUp 1.1s var(--spring) 1.7s both}
+@keyframes pmUp{from{transform:translateY(64px) scale(1.45)}}
+.pbeam{stroke-dasharray:100;stroke-dashoffset:100;animation:pDraw .6s cubic-bezier(.7,0,.3,1) .1s forwards,lmFadeOut .4s ease 1.05s forwards;filter:drop-shadow(0 0 4px #fff)}
+@keyframes pDraw{to{stroke-dashoffset:0}}
+@keyframes lmFadeOut{to{opacity:0}}
+.pfac{transform-box:view-box;transform-origin:50px 57.3px;opacity:0;transform:translate(var(--dx),var(--dy)) rotate(var(--r)) scale(.6);animation:pFac .95s cubic-bezier(.2,1.25,.35,1) .55s forwards}
+.pfac:nth-child(2){animation-delay:.63s}.pfac:nth-child(3){animation-delay:.71s}
+@keyframes pFac{to{opacity:1;transform:none}}
+.pglow{opacity:0;animation:pGlow 1.6s ease 1.1s forwards}
+@keyframes pGlow{30%{opacity:1}100%{opacity:.55}}
+.pcuts{opacity:0;animation:lmFade .4s ease 1.25s forwards}
+.pspark{transform-box:view-box;transform-origin:50px 57.3px;transform:scale(0) rotate(-90deg);animation:pSpark .8s cubic-bezier(.2,1.6,.4,1) .7s forwards,pTw 2.4s ease-in-out 1.6s infinite}
+@keyframes pSpark{to{transform:none}}
+@keyframes pTw{50%{transform:scale(1.18) rotate(45deg)}}
+.pring{transform-box:view-box;transform-origin:50px 57.3px;opacity:0;animation:pRing 1.2s cubic-bezier(.1,.7,.3,1) 1.15s}
+.pring.r2{animation-delay:1.3s}
+@keyframes pRing{0%{opacity:.9;transform:scale(.3)}100%{opacity:0;transform:scale(6)}}
+.pword{position:relative;margin-top:30px;font-family:var(--f-sysd);font-weight:700;font-size:40px;letter-spacing:.34em;padding-left:.34em;color:#fff;opacity:0;animation:pWord 1.1s cubic-bezier(.2,.8,.2,1) 1.85s forwards}
+.pword::before,.pword::after{content:attr(data-t);position:absolute;inset:0;padding-left:.34em;mix-blend-mode:screen;animation:pAb 1.1s cubic-bezier(.2,.8,.2,1) 1.85s both}
+.pword::before{color:#FF2D55;--x:-9px}
+.pword::after{color:#0A84FF;--x:9px}
+@keyframes pWord{from{opacity:0;letter-spacing:.9em;filter:blur(8px)}to{opacity:1}}
+@keyframes pAb{from{transform:translateX(var(--x));opacity:.9}70%{opacity:.6}to{transform:none;opacity:0}}
+.ptag{margin-top:12px;font-size:16px;letter-spacing:.01em;color:rgba(235,235,255,.6);opacity:0;animation:lmFade .9s ease 2.5s forwards}
+.pwipe{position:absolute;top:0;bottom:0;width:60%;left:-70%;background:linear-gradient(90deg,transparent,rgba(255,55,95,.35),rgba(255,214,10,.35),rgba(48,209,88,.35),rgba(10,132,255,.35),rgba(191,90,242,.35),transparent);filter:blur(20px);pointer-events:none}
+#lintro.out .pwipe{animation:pWipe .8s cubic-bezier(.5,0,.3,1) forwards}
+@keyframes pWipe{to{left:120%}}
+.pz .lstage{position:relative;z-index:1}
 </style>
 
 <div id="store"></div>
@@ -1077,7 +1114,7 @@ function myTile(a,k){
 var XSVG='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>';
 function openAdd(){
  var mine=myApps().map(function(a){return a.n});
- $("#overlay").innerHTML='<div class="scrim" data-close="1"></div><div class="sheet" role="dialog" aria-label="Ajouter une app"><div class="grab"></div><button class="closex" data-close="1" aria-label="Fermer">'+XSVG+'</button><h5 style="font-family:var(--f-sysd);font-size:28px;font-weight:700;margin:6px 0 0;letter-spacing:-.02em">Ajouter une app</h5><p style="color:var(--label2);margin-top:4px">Touche une app pour l\'ajouter à Lima.</p><div class="presets">'
+ $("#overlay").innerHTML='<div class="scrim" data-close="1"></div><div class="sheet" role="dialog" aria-label="Ajouter une app"><div class="grab"></div><button class="closex" data-close="1" aria-label="Fermer">'+XSVG+'</button><h5 style="font-family:var(--f-sysd);font-size:28px;font-weight:700;margin:6px 0 0;letter-spacing:-.02em">Ajouter une app</h5><p style="color:var(--label2);margin-top:4px">Touche une app pour l\'ajouter à Prisme.</p><div class="presets">'
   +PRESETS.filter(function(p){return mine.indexOf(p[0])<0}).map(function(p){return '<button class="app" data-preset="'+p[0]+'"><span class="ic">'+letterIcon({n:p[0],c:p[2]})+'</span><b>'+p[0]+'</b></button>'}).join("")
   +'</div><label class="lbl2" for="addName">Une autre app</label><input class="field" id="addName" placeholder="Nom (ex. Deezer)" autocomplete="off"><input class="field" id="addUrl" placeholder="Lien (ex. deezer.com)" autocomplete="off" inputmode="url" autocapitalize="none"><button class="btn-s" data-addcustom="1">Ajouter</button><div class="note">L\'app s\'ouvre si elle est installée sur ton iPhone, sinon c\'est son site qui s\'ouvre.</div></div>';
 }
@@ -1171,7 +1208,7 @@ function viewApps(){
  h+=hdr("Top Apps","Celles que tu ouvres le plus","topapps")+chart(appIds);
  h+=hdr("Accès rapide")+'<div class="grid">'+APPS.map(function(a){return '<button class="app" data-app="'+a.id+'">'+icn(a.id)+'<b>'+a.name+'</b></button>'}).join("")+'<button class="app folder" data-folder="1"><span class="ic"><i>'+ICON.bastion+'</i><i>'+ICON.mafia+'</i><i>'+ICON.studio+'</i><i>'+ICON.breche+'</i></span><b>Tycoon & RPG</b></button></div>';
  h+='<div class="hdr"><div><h2>Mon iPhone</h2><small>Tes autres apps</small></div>'+(mine.length?'<button class="link" data-edit="1">'+(editMode?"OK":"Modifier")+'</button>':"")+'</div><div class="grid">'+mine.map(myTile).join("")+(editMode?"":'<button class="app" data-add="1"><span class="ic addic">+</span><b>Ajouter</b></button>')+'</div>';
- return h+'<div class="foottxt">Lima Store · '+allIds().length+' créations</div>';
+ return h+'<div class="foottxt">Prisme · '+allIds().length+' créations</div>';
 }
 function viewGames(){
  var h=largeTitle("Jeux")+chips(GAME_APPS.concat(GIDS));
@@ -1273,7 +1310,7 @@ function openDetail(id){
  if(sh){h+='<section class="dsec"><div class="sh2"><h2>Aperçu</h2></div><div class="shots">';for(var i=1;i<=sh;i++)h+='<button class="shot" data-shot="'+id+'|'+i+'"><img loading="lazy" alt="Capture '+i+' de '+esc(it.name)+'" src="'+shot(id,i)+'"></button>';h+='</div><div class="dev2"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><rect x="6" y="2.5" width="12" height="19" rx="3"/></svg>iPhone</div></section>'}
  h+='<section class="dsec"><div class="dsc"><p>'+esc(it.desc)+'</p><button class="more" data-more="1">plus</button></div><button class="devrow" data-cat="dev"><span><b>Seven</b><small>Créateur</small></span>'+CHEV+'</button></section>';
  h+='<section class="dsec"><div class="sh2"><h2>Notes et avis</h2></div><div class="rate"><div class="big"><b>'+(r?r.toFixed(1).replace(".",","):"–")+'</b><small>sur 5</small></div><div class="rbars">'+[5,4,3,2,1].map(function(k){return '<div><span>'+"★".repeat(k)+'</span><i><u style="width:'+(r===k?100:0)+'%"></u></i></div>'}).join("")+'<small>'+(r?"Ta note":"Aucune note pour l'instant")+'</small></div></div><div class="tap"><span>Touche pour noter :</span><span class="stars big" data-rate="'+id+'">'+[1,2,3,4,5].map(function(k){return '<button data-star="'+k+'" class="'+(k<=r?"on":"")+'" aria-label="'+k+' étoile'+(k>1?"s":"")+'">'+STAR+'</button>'}).join("")+'</span></div></section>';
- h+='<section class="dsec"><div class="sh2"><h2>Informations</h2></div><div class="infos">'+[["Créateur","Seven"],["Catégorie",esc(it.cat)],["Compatibilité","iPhone, iPad et ordinateur"],["Langue","Français"],["Âge",(AGE[id]||"4+")],["Prix","Gratuit"],["Où elle vit",it.tycoon?"Dans Lima Store":it.live?"En ligne":"Incluse dans Lima Store"]].map(function(x){return '<div><span>'+x[0]+'</span><b>'+x[1]+'</b></div>'}).join("")+'</div>'+(it.tycoon?"":'<p class="tip">'+(it.live?"Astuce : dans Safari, Partager puis « Sur l'écran d'accueil » pour l'avoir comme une vraie appli.":"Elle s'ouvre directement depuis Lima Store.")+'</p>')+'</section>';
+ h+='<section class="dsec"><div class="sh2"><h2>Informations</h2></div><div class="infos">'+[["Créateur","Seven"],["Catégorie",esc(it.cat)],["Compatibilité","iPhone, iPad et ordinateur"],["Langue","Français"],["Âge",(AGE[id]||"4+")],["Prix","Gratuit"],["Où elle vit",it.tycoon?"Dans Prisme":it.live?"En ligne":"Incluse dans Prisme"]].map(function(x){return '<div><span>'+x[0]+'</span><b>'+x[1]+'</b></div>'}).join("")+'</div>'+(it.tycoon?"":'<p class="tip">'+(it.live?"Astuce : dans Safari, Partager puis « Sur l'écran d'accueil » pour l'avoir comme une vraie appli.":"Elle s'ouvre directement depuis Prisme.")+'</p>')+'</section>';
  var like=allIds().filter(function(x){return x!==id&&(item(x).game===it.game)}).slice(0,9);
  h+='<section class="dsec"><div class="sh2"><h2>Tu aimeras aussi</h2></div><div class="hs rows3">'+like.map(function(x){return arow(x)}).join("")+'</div></section>';
  var el=pushPage(h,it.name,"detail");
@@ -1370,7 +1407,7 @@ document.addEventListener("click",function(e){
  if(x=t.closest("[data-star]")){var id=x.parentNode.dataset.rate,k=+x.dataset.star,rr=ratings();rr[id]=k;store.set("lima.ratings",rr);x.parentNode.querySelectorAll("button").forEach(function(b){b.classList.toggle("on",+b.dataset.star<=k);b.classList.remove("pop")});void x.offsetWidth;x.classList.add("pop");var pg=x.closest(".page");if(pg){var big=pg.querySelector(".rate .big b");if(big)big.textContent=k.toFixed(1).replace(".",",");pg.querySelectorAll(".rbars u").forEach(function(u,j){u.style.width=(5-j===k?100:0)+"%"});var lab=pg.querySelector(".rbars small");if(lab)lab.textContent="Ta note";var c=pg.querySelector(".istrip .ic2");if(c)c.outerHTML=infoCell("Ta note",k.toFixed(1).replace(".",","),stars(k,"sm"))}return}
  if(x=t.closest("[data-shot]")){var p=x.dataset.shot.split("|");openShots(p[0],+p[1]);return}
  if(x=t.closest("[data-more]")){x.parentNode.classList.add("full");return}
- if(x=t.closest("[data-share]")){var v=x.dataset.share,data={title:"Lima Store",url:location.href.split("#")[0]};if(v!=="story"){data.title=item(v).name;data.text=item(v).tag}try{if(navigator.share)navigator.share(data).catch(function(){});else if(navigator.clipboard)navigator.clipboard.writeText(data.url)}catch(err){}return}
+ if(x=t.closest("[data-share]")){var v=x.dataset.share,data={title:"Prisme",url:location.href.split("#")[0]};if(v!=="story"){data.title=item(v).name;data.text=item(v).tag}try{if(navigator.share)navigator.share(data).catch(function(){});else if(navigator.clipboard)navigator.clipboard.writeText(data.url)}catch(err){}return}
  if(x=t.closest("[data-list]")){openList(x.dataset.list);return}
  if(x=t.closest("[data-cat]")){openList(x.dataset.cat);return}
  if(x=t.closest("[data-q]")){openSearch();var q=$("#spq");q.value=x.dataset.q;renderSearch(q.value);return}
@@ -1401,8 +1438,8 @@ function streak(days){var set={},n=0;days.forEach(function(d){set[d]=1});var t=n
 /* ---------- TROPHIES ---------- */
 var TIER={b:["Bronze",10,"#C08457"],a:["Argent",25,"#A7B0BC"],o:["Or",50,"#E3B341"]};
 var TROPHIES=[
- ["bienvenue","Bienvenue","Ouvre Lima Store pour la première fois.","b",function(c){return true}],
- ["explorateur","Explorateur","Ouvre 5 créations différentes depuis Lima.","a",function(c){return Object.keys(c.st.opens).length>=5}],
+ ["bienvenue","Bienvenue","Ouvre Prisme pour la première fois.","b",function(c){return true}],
+ ["explorateur","Explorateur","Ouvre 5 créations différentes depuis Prisme.","a",function(c){return Object.keys(c.st.opens).length>=5}],
  ["fidele","Fidèle","Viens 3 jours différents.","b",function(c){return c.st.days.length>=3}],
  ["serie","En série","Viens 7 jours d'affilée.","o",function(c){return streak(c.st.days)>=7}],
  ["collection","Collectionneur","Ajoute 3 apps dans Mon iPhone.","b",function(c){return myApps().length>=3}],
@@ -1520,7 +1557,7 @@ function searchItems(){
  APPS.forEach(function(a){it.push({k:"Mes créations",n:a.name,sub:a.cat,kw:a.tag+" "+a.desc+" "+a.cat,html:icn(a.id),act:'data-app="'+a.id+'"',btn:"Ouvrir",href:a.url,track:a.id})});
  GIDS.forEach(function(id){var g=GAMES[id];it.push({k:"Jeux",n:g.full,sub:"Tycoon",kw:"tycoon jeu "+g.tag,html:icn(id),act:'data-game="'+id+'"',btn:"Jouer"})});
  myApps().forEach(function(a,k){it.push({k:"Mon iPhone",n:a.n,sub:"App de ton iPhone",kw:a.u,html:'<span class="ic">'+letterIcon(a)+'</span>',href:a.u,btn:"Ouvrir"})});
- [["Mes succès","profil trophees niveau xp","data-profile=\"1\""],["Fond d'écran et thème","personnaliser couleur sombre clair theme wallpaper","data-custom=\"1\""],["Ajouter une app","youtube tiktok instagram snapchat ajouter","data-add=\"1\""],["Dossier Tycoon","bastion mafia studio","data-folder=\"1\""]].forEach(function(a){it.push({k:"Raccourcis",n:a[0],sub:"Lima",kw:a[1],html:'<span class="ic sic">'+limaLogo("#121316")+'</span>',act:a[2]})});
+ [["Mes succès","profil trophees niveau xp","data-profile=\"1\""],["Fond d'écran et thème","personnaliser couleur sombre clair theme wallpaper","data-custom=\"1\""],["Ajouter une app","youtube tiktok instagram snapchat ajouter","data-add=\"1\""],["Dossier Tycoon","bastion mafia studio","data-folder=\"1\""]].forEach(function(a){it.push({k:"Raccourcis",n:a[0],sub:"Prisme",kw:a[1],html:'<span class="ic sic">'+limaLogo("#121316")+'</span>',act:a[2]})});
  return it;
 }
 function openSearch(){
@@ -1565,7 +1602,7 @@ var cur=null,GM=null,S=null,tab=null,tick=null,lastT=0,lastSig="",lastSave=0,she
 function openGame(id,skipHash){
  closeOverlay();cur=id;GM=GAMES[id];S=gload(id);tab=GM.tabs[0][0];sheetFn=null;
  var gm=$("#game");gm.className=GM.cls;gm.hidden=false;document.body.style.overflow="hidden";
- gm.innerHTML='<div class="wrap"><div class="g-top"><button class="g-back" data-back="1" aria-label="Retour au store"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 5l-7 7 7 7"/></svg></button><div class="g-title"><small>Lima Store · Tycoon</small><b>'+GM.full+'</b></div></div>'
+ gm.innerHTML='<div class="wrap"><div class="g-top"><button class="g-back" data-back="1" aria-label="Retour au store"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 5l-7 7 7 7"/></svg></button><div class="g-title"><small>Prisme · Tycoon</small><b>'+GM.full+'</b></div></div>'
   +'<div class="g-hud"><div class="chips" id="gTop"></div><div class="g-rank"><span>Rang : <b id="gRank"></b></span><span id="gNext"></span></div><div class="bar"><i id="gBar"></i></div></div>'
   +'<div class="tabs" id="gTabs"></div><div id="gBody"></div></div><div id="gSheet"></div>';
  // offline
@@ -1639,20 +1676,24 @@ window.addEventListener("pagehide",function(){if(cur)gsave(cur,S)});
 window.addEventListener("resize",function(){if(!cur){var b=$(".feat");drawFeat(b?b.dataset.game:"bastion")}});
 
 /* ---------- LOGO + INTRO ---------- */
-/* Lima mark: a lime slice seen from above. 8 rounded segments, pith ring, rind. */
-function limeSegs(cls){var s="",n=8,ri=4,ro=25.2,g=11;for(var i=0;i<n;i++){var a0=(i*360/n+g/2-90)*Math.PI/180,a1=((i+1)*360/n-g/2-90)*Math.PI/180;var p=function(r,a){return (50+r*Math.cos(a)).toFixed(2)+" "+(50+r*Math.sin(a)).toFixed(2)};s+='<path class="'+(cls||"")+'" style="--k:'+i+'" d="M'+p(ri+1.5,(a0+a1)/2)+" L"+p(ro,a0)+" A"+ro+" "+ro+" 0 0 1 "+p(ro,a1)+' Z" fill="url(#lmF)" stroke="url(#lmF)" stroke-width="2.2" stroke-linejoin="round"/>'}return s}
-function limeDefs(){return '<defs><radialGradient id="lmF" cx="50" cy="50" r="27" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#F3FFB8"/><stop offset=".55" stop-color="#C6EE5A"/><stop offset="1" stop-color="#86C92E"/></radialGradient><linearGradient id="lmR" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8FD94A"/><stop offset=".6" stop-color="#3FA535"/><stop offset="1" stop-color="#1F7A2C"/></linearGradient><radialGradient id="lmB" cx=".3" cy=".2" r="1"><stop offset="0" stop-color="#26332A"/><stop offset="1" stop-color="#0B0F0C"/></radialGradient></defs>'}
-function limaLogo(bg){return '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">'+limeDefs()+(bg?'<rect width="100" height="100" fill="url(#lmB)"/>':"")+'<circle cx="50" cy="50" r="34" fill="url(#lmR)"/><circle cx="50" cy="50" r="30.6" fill="#F8FDEB"/>'+limeSegs()+'<circle cx="50" cy="50" r="2.4" fill="#F8FDEB"/><path d="M27 36a27 27 0 0 1 17-14" fill="none" stroke="#fff" stroke-opacity=".55" stroke-width="2.2" stroke-linecap="round"/></svg>'}
+/* Prisme mark: a rounded crystal triangle split into three spectrum facets, with a spark of light at its heart. */
+var PF=[["M50 16 86 78 50 57.3Z","#FFB340","#FF2D55","1 0"],["M86 78 14 78 50 57.3Z","#34E07A","#0A84FF","0 1"],["M14 78 50 16 50 57.3Z","#5E5CE6","#D35CFF","-1 0"]];
+function prismDefs(){return '<defs><radialGradient id="pmB" cx=".5" cy=".42" r=".75"><stop offset="0" stop-color="#1E1E3A"/><stop offset="1" stop-color="#06060B"/></radialGradient>'+PF.map(function(f,i){return '<linearGradient id="pmF'+i+'" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="'+f[1]+'"/><stop offset="1" stop-color="'+f[2]+'"/></linearGradient>'}).join("")+'<radialGradient id="pmS"><stop offset="0" stop-color="#fff"/><stop offset=".35" stop-color="#fff" stop-opacity=".6"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient><linearGradient id="pmE" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#fff"/></linearGradient><filter id="pmBl" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="3"/></filter></defs>'}
+function prismFacets(cls){return PF.map(function(f,i){var d=f[3].split(" ");return '<path class="'+(cls||"")+'" style="--dx:'+(d[0]*30)+'px;--dy:'+(d[1]*30-(i===0?0:0))+'px;--r:'+(i*40-40)+'deg" d="'+f[0]+'" fill="url(#pmF'+i+')" stroke="url(#pmF'+i+')" stroke-width="7" stroke-linejoin="round"/>'}).join("")}
+var PCUTS='<path d="M50 57.3 50 16M50 57.3 86 78M50 57.3 14 78" stroke="#0B0B16" stroke-opacity=".55" stroke-width="2.2" stroke-linecap="round"/>';
+function prismSpark(cls){return '<g class="'+(cls||"")+'"><circle cx="50" cy="57.3" r="13" fill="url(#pmS)" opacity=".85"/><path d="M50 47.5Q51 56.3 59.8 57.3 51 58.3 50 67.1 49 58.3 40.2 57.3 49 56.3 50 47.5Z" fill="#fff"/></g>'}
+function limaLogo(bg){return '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">'+prismDefs()+(bg?'<rect width="100" height="100" fill="url(#pmB)"/>':"")+'<g opacity=".55" filter="url(#pmBl)">'+prismFacets()+'</g>'+prismFacets()+PCUTS+'<path d="M45 27 30 54" stroke="#fff" stroke-opacity=".45" stroke-width="2" stroke-linecap="round"/>'+prismSpark()+'</svg>'}
 function playIntro(){
  if(REDUCE||GAMES[location.hash.slice(1)])return;
- var h='<div id="lintro" role="presentation"><div class="lstage"><svg class="lmark" viewBox="0 0 100 100">'+limeDefs()+'<defs><clipPath id="lmC"><circle cx="50" cy="50" r="34"/></clipPath><linearGradient id="lmS" x1="0" x2="1"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".5" stop-color="#fff" stop-opacity=".75"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient></defs>'
-  +'<g class="lspin"><circle class="lrind" cx="50" cy="50" r="32.3" fill="none" stroke="url(#lmR)" stroke-width="3.4" pathLength="100"/><circle class="lpith" cx="50" cy="50" r="30.6" fill="#F8FDEB"/>'+limeSegs("lseg")+'<circle class="lpith" cx="50" cy="50" r="2.4" fill="#F8FDEB"/></g>'
-  +'<g clip-path="url(#lmC)"><rect class="lshine" x="-60" y="-10" width="40" height="120" fill="url(#lmS)" transform="rotate(20 50 50)"/></g></svg>'
-  +'<div class="lword">'+"Lima Store".split("").map(function(c,k){return '<span style="--k:'+k+'">'+(c===" "?"&nbsp;":c)+'</span>'}).join("")+'</div><div class="ltag">Tes apps. Tes jeux. Au même endroit.</div></div></div>';
+ var h='<div id="lintro" class="pz" role="presentation"><div class="pgrid"></div><div class="pflash"></div><div class="lstage"><svg class="pmark" viewBox="0 0 100 100" overflow="visible">'+prismDefs()
+  +'<circle class="pring" cx="50" cy="57.3" r="20" fill="none" stroke="#fff" stroke-width="1.2"/><circle class="pring r2" cx="50" cy="57.3" r="20" fill="none" stroke="#9FB4FF" stroke-width="1"/>'
+  +'<path class="pbeam" d="M-90 57.3H50" stroke="url(#pmE)" stroke-width="2.6" stroke-linecap="round" pathLength="100"/>'
+  +'<g class="pglow" filter="url(#pmBl)">'+prismFacets("pfac")+'</g>'+prismFacets("pfac")+'<g class="pcuts">'+PCUTS+'</g>'+prismSpark("pspark")+'</svg>'
+  +'<div class="pword" data-t="PRISME">PRISME</div><div class="ptag">Toutes tes apps. Une seule lumière.</div></div><div class="pwipe"></div></div>';
  document.body.insertAdjacentHTML("beforeend",h);document.documentElement.classList.add("intro");
  var el=document.getElementById("lintro"),gone=false;
- function end(){if(gone)return;gone=true;el.classList.add("out");document.documentElement.classList.remove("intro");setTimeout(function(){el.remove()},700)}
- el.addEventListener("click",end);setTimeout(end,3300);
+ function end(){if(gone)return;gone=true;el.classList.add("out");document.documentElement.classList.remove("intro");setTimeout(function(){el.remove()},800)}
+ el.addEventListener("click",end);setTimeout(end,3600);
 }
 
 applyLook();trackDay();renderStore();playIntro();setTimeout(checkTrophies,3200);
