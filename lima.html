@@ -1,4 +1,4 @@
-<title>Prisme</title>
+<title>Pop</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Familjen+Grotesk:wght@500;600;700&family=Schibsted+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Limelight&family=Saira+Condensed:wght@500;700;800&display=swap">
@@ -747,6 +747,28 @@ body{letter-spacing:-.022em}
 #lintro.out .pwipe{animation:pWipe .8s cubic-bezier(.5,0,.3,1) forwards}
 @keyframes pWipe{to{left:120%}}
 .pz .lstage{position:relative;z-index:1}
+
+/* ================= POP intro (v9) ================= */
+#lintro.pop{background:linear-gradient(160deg,#FF5FA2 0%,#FF4D6D 55%,#FF9A3C 100%);overflow:hidden;color:#fff}
+#lintro.pop.out{opacity:0;transform:scale(1.15);transition:opacity .55s ease .1s,transform .7s cubic-bezier(.3,0,.2,1)}
+.pbs{position:absolute;inset:0;pointer-events:none}
+.pb{position:absolute;left:var(--x);bottom:-60px;width:var(--s);height:var(--s);border-radius:50%;background:radial-gradient(circle at 35% 30%,rgba(255,255,255,.95) 0 12%,rgba(255,255,255,.12) 22%,rgba(255,255,255,.08) 62%,rgba(159,243,255,.7) 82%,rgba(255,255,255,.9) 100%);opacity:0;animation:pbUp var(--t) cubic-bezier(.3,.1,.5,1) var(--d) infinite}
+@keyframes pbUp{0%{opacity:0;transform:translate(0,0) scale(.6)}12%{opacity:.95}50%{transform:translate(var(--w),-55vh) scale(1)}100%{opacity:0;transform:translate(calc(var(--w) * -1),-110vh) scale(1.1)}}
+.pop .lstage{position:relative;z-index:1;width:100%;height:100%;display:grid;place-items:center}
+.pbig{position:absolute;left:50%;top:50%;width:190px;height:190px;margin:-95px 0 0 -95px;transform:scale(0);animation:pInflate 1.15s cubic-bezier(.3,1.5,.5,1) .35s forwards,pBurst .18s ease-in 1.5s forwards}
+.pbig svg{width:100%;height:100%;overflow:visible;animation:pWob 1.3s ease-in-out .35s}
+@keyframes pInflate{0%{transform:scale(0)}60%{transform:scale(.92)}100%{transform:scale(1)}}
+@keyframes pWob{25%{transform:scale(1.06,.94)}50%{transform:scale(.95,1.05)}75%{transform:scale(1.03,.97)}}
+@keyframes pBurst{to{transform:scale(1.25);opacity:0}}
+.pring2{position:absolute;left:50%;top:50%;width:190px;height:190px;margin:-95px 0 0 -95px;border-radius:50%;border:4px solid rgba(255,255,255,.9);opacity:0;animation:pRing2 .6s cubic-bezier(.1,.7,.3,1) 1.58s}
+@keyframes pRing2{0%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(2.1);border-width:1px}}
+.pdrops{position:absolute;left:50%;top:50%}
+.pd{position:absolute;width:var(--s);height:var(--s);margin:calc(var(--s) / -2);border-radius:50%;background:#fff;opacity:0;animation:pDrop .7s cubic-bezier(.1,.8,.3,1) 1.6s}
+@keyframes pDrop{0%{opacity:1;transform:translate(0,0) scale(1)}100%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(.3)}}
+.pword2{position:absolute;left:0;right:0;top:50%;margin-top:-58px;text-align:center;font-family:ui-rounded,"SF Pro Rounded",var(--f-sysd);font-weight:800;font-size:104px;letter-spacing:-.04em;line-height:1;text-shadow:0 10px 30px rgba(140,0,40,.3)}
+.pword2 span{display:inline-block;transform:scale(0);animation:pLet .7s cubic-bezier(.3,1.8,.5,1) calc(1.62s + var(--k) * .08s) forwards}
+@keyframes pLet{to{transform:none}}
+.ptag2{position:absolute;left:0;right:0;top:50%;margin-top:74px;text-align:center;font-size:18px;font-weight:600;opacity:0;animation:lmFade .7s ease 2.25s forwards}
 </style>
 
 <div id="store"></div>
@@ -1114,7 +1136,7 @@ function myTile(a,k){
 var XSVG='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>';
 function openAdd(){
  var mine=myApps().map(function(a){return a.n});
- $("#overlay").innerHTML='<div class="scrim" data-close="1"></div><div class="sheet" role="dialog" aria-label="Ajouter une app"><div class="grab"></div><button class="closex" data-close="1" aria-label="Fermer">'+XSVG+'</button><h5 style="font-family:var(--f-sysd);font-size:28px;font-weight:700;margin:6px 0 0;letter-spacing:-.02em">Ajouter une app</h5><p style="color:var(--label2);margin-top:4px">Touche une app pour l\'ajouter à Prisme.</p><div class="presets">'
+ $("#overlay").innerHTML='<div class="scrim" data-close="1"></div><div class="sheet" role="dialog" aria-label="Ajouter une app"><div class="grab"></div><button class="closex" data-close="1" aria-label="Fermer">'+XSVG+'</button><h5 style="font-family:var(--f-sysd);font-size:28px;font-weight:700;margin:6px 0 0;letter-spacing:-.02em">Ajouter une app</h5><p style="color:var(--label2);margin-top:4px">Touche une app pour l\'ajouter à Pop.</p><div class="presets">'
   +PRESETS.filter(function(p){return mine.indexOf(p[0])<0}).map(function(p){return '<button class="app" data-preset="'+p[0]+'"><span class="ic">'+letterIcon({n:p[0],c:p[2]})+'</span><b>'+p[0]+'</b></button>'}).join("")
   +'</div><label class="lbl2" for="addName">Une autre app</label><input class="field" id="addName" placeholder="Nom (ex. Deezer)" autocomplete="off"><input class="field" id="addUrl" placeholder="Lien (ex. deezer.com)" autocomplete="off" inputmode="url" autocapitalize="none"><button class="btn-s" data-addcustom="1">Ajouter</button><div class="note">L\'app s\'ouvre si elle est installée sur ton iPhone, sinon c\'est son site qui s\'ouvre.</div></div>';
 }
@@ -1208,7 +1230,7 @@ function viewApps(){
  h+=hdr("Top Apps","Celles que tu ouvres le plus","topapps")+chart(appIds);
  h+=hdr("Accès rapide")+'<div class="grid">'+APPS.map(function(a){return '<button class="app" data-app="'+a.id+'">'+icn(a.id)+'<b>'+a.name+'</b></button>'}).join("")+'<button class="app folder" data-folder="1"><span class="ic"><i>'+ICON.bastion+'</i><i>'+ICON.mafia+'</i><i>'+ICON.studio+'</i><i>'+ICON.breche+'</i></span><b>Tycoon & RPG</b></button></div>';
  h+='<div class="hdr"><div><h2>Mon iPhone</h2><small>Tes autres apps</small></div>'+(mine.length?'<button class="link" data-edit="1">'+(editMode?"OK":"Modifier")+'</button>':"")+'</div><div class="grid">'+mine.map(myTile).join("")+(editMode?"":'<button class="app" data-add="1"><span class="ic addic">+</span><b>Ajouter</b></button>')+'</div>';
- return h+'<div class="foottxt">Prisme · '+allIds().length+' créations</div>';
+ return h+'<div class="foottxt">Pop · '+allIds().length+' créations</div>';
 }
 function viewGames(){
  var h=largeTitle("Jeux")+chips(GAME_APPS.concat(GIDS));
@@ -1310,7 +1332,7 @@ function openDetail(id){
  if(sh){h+='<section class="dsec"><div class="sh2"><h2>Aperçu</h2></div><div class="shots">';for(var i=1;i<=sh;i++)h+='<button class="shot" data-shot="'+id+'|'+i+'"><img loading="lazy" alt="Capture '+i+' de '+esc(it.name)+'" src="'+shot(id,i)+'"></button>';h+='</div><div class="dev2"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><rect x="6" y="2.5" width="12" height="19" rx="3"/></svg>iPhone</div></section>'}
  h+='<section class="dsec"><div class="dsc"><p>'+esc(it.desc)+'</p><button class="more" data-more="1">plus</button></div><button class="devrow" data-cat="dev"><span><b>Seven</b><small>Créateur</small></span>'+CHEV+'</button></section>';
  h+='<section class="dsec"><div class="sh2"><h2>Notes et avis</h2></div><div class="rate"><div class="big"><b>'+(r?r.toFixed(1).replace(".",","):"–")+'</b><small>sur 5</small></div><div class="rbars">'+[5,4,3,2,1].map(function(k){return '<div><span>'+"★".repeat(k)+'</span><i><u style="width:'+(r===k?100:0)+'%"></u></i></div>'}).join("")+'<small>'+(r?"Ta note":"Aucune note pour l'instant")+'</small></div></div><div class="tap"><span>Touche pour noter :</span><span class="stars big" data-rate="'+id+'">'+[1,2,3,4,5].map(function(k){return '<button data-star="'+k+'" class="'+(k<=r?"on":"")+'" aria-label="'+k+' étoile'+(k>1?"s":"")+'">'+STAR+'</button>'}).join("")+'</span></div></section>';
- h+='<section class="dsec"><div class="sh2"><h2>Informations</h2></div><div class="infos">'+[["Créateur","Seven"],["Catégorie",esc(it.cat)],["Compatibilité","iPhone, iPad et ordinateur"],["Langue","Français"],["Âge",(AGE[id]||"4+")],["Prix","Gratuit"],["Où elle vit",it.tycoon?"Dans Prisme":it.live?"En ligne":"Incluse dans Prisme"]].map(function(x){return '<div><span>'+x[0]+'</span><b>'+x[1]+'</b></div>'}).join("")+'</div>'+(it.tycoon?"":'<p class="tip">'+(it.live?"Astuce : dans Safari, Partager puis « Sur l'écran d'accueil » pour l'avoir comme une vraie appli.":"Elle s'ouvre directement depuis Prisme.")+'</p>')+'</section>';
+ h+='<section class="dsec"><div class="sh2"><h2>Informations</h2></div><div class="infos">'+[["Créateur","Seven"],["Catégorie",esc(it.cat)],["Compatibilité","iPhone, iPad et ordinateur"],["Langue","Français"],["Âge",(AGE[id]||"4+")],["Prix","Gratuit"],["Où elle vit",it.tycoon?"Dans Pop":it.live?"En ligne":"Incluse dans Pop"]].map(function(x){return '<div><span>'+x[0]+'</span><b>'+x[1]+'</b></div>'}).join("")+'</div>'+(it.tycoon?"":'<p class="tip">'+(it.live?"Astuce : dans Safari, Partager puis « Sur l'écran d'accueil » pour l'avoir comme une vraie appli.":"Elle s'ouvre directement depuis Pop.")+'</p>')+'</section>';
  var like=allIds().filter(function(x){return x!==id&&(item(x).game===it.game)}).slice(0,9);
  h+='<section class="dsec"><div class="sh2"><h2>Tu aimeras aussi</h2></div><div class="hs rows3">'+like.map(function(x){return arow(x)}).join("")+'</div></section>';
  var el=pushPage(h,it.name,"detail");
@@ -1407,7 +1429,7 @@ document.addEventListener("click",function(e){
  if(x=t.closest("[data-star]")){var id=x.parentNode.dataset.rate,k=+x.dataset.star,rr=ratings();rr[id]=k;store.set("lima.ratings",rr);x.parentNode.querySelectorAll("button").forEach(function(b){b.classList.toggle("on",+b.dataset.star<=k);b.classList.remove("pop")});void x.offsetWidth;x.classList.add("pop");var pg=x.closest(".page");if(pg){var big=pg.querySelector(".rate .big b");if(big)big.textContent=k.toFixed(1).replace(".",",");pg.querySelectorAll(".rbars u").forEach(function(u,j){u.style.width=(5-j===k?100:0)+"%"});var lab=pg.querySelector(".rbars small");if(lab)lab.textContent="Ta note";var c=pg.querySelector(".istrip .ic2");if(c)c.outerHTML=infoCell("Ta note",k.toFixed(1).replace(".",","),stars(k,"sm"))}return}
  if(x=t.closest("[data-shot]")){var p=x.dataset.shot.split("|");openShots(p[0],+p[1]);return}
  if(x=t.closest("[data-more]")){x.parentNode.classList.add("full");return}
- if(x=t.closest("[data-share]")){var v=x.dataset.share,data={title:"Prisme",url:location.href.split("#")[0]};if(v!=="story"){data.title=item(v).name;data.text=item(v).tag}try{if(navigator.share)navigator.share(data).catch(function(){});else if(navigator.clipboard)navigator.clipboard.writeText(data.url)}catch(err){}return}
+ if(x=t.closest("[data-share]")){var v=x.dataset.share,data={title:"Pop",url:location.href.split("#")[0]};if(v!=="story"){data.title=item(v).name;data.text=item(v).tag}try{if(navigator.share)navigator.share(data).catch(function(){});else if(navigator.clipboard)navigator.clipboard.writeText(data.url)}catch(err){}return}
  if(x=t.closest("[data-list]")){openList(x.dataset.list);return}
  if(x=t.closest("[data-cat]")){openList(x.dataset.cat);return}
  if(x=t.closest("[data-q]")){openSearch();var q=$("#spq");q.value=x.dataset.q;renderSearch(q.value);return}
@@ -1438,8 +1460,8 @@ function streak(days){var set={},n=0;days.forEach(function(d){set[d]=1});var t=n
 /* ---------- TROPHIES ---------- */
 var TIER={b:["Bronze",10,"#C08457"],a:["Argent",25,"#A7B0BC"],o:["Or",50,"#E3B341"]};
 var TROPHIES=[
- ["bienvenue","Bienvenue","Ouvre Prisme pour la première fois.","b",function(c){return true}],
- ["explorateur","Explorateur","Ouvre 5 créations différentes depuis Prisme.","a",function(c){return Object.keys(c.st.opens).length>=5}],
+ ["bienvenue","Bienvenue","Ouvre Pop pour la première fois.","b",function(c){return true}],
+ ["explorateur","Explorateur","Ouvre 5 créations différentes depuis Pop.","a",function(c){return Object.keys(c.st.opens).length>=5}],
  ["fidele","Fidèle","Viens 3 jours différents.","b",function(c){return c.st.days.length>=3}],
  ["serie","En série","Viens 7 jours d'affilée.","o",function(c){return streak(c.st.days)>=7}],
  ["collection","Collectionneur","Ajoute 3 apps dans Mon iPhone.","b",function(c){return myApps().length>=3}],
@@ -1557,7 +1579,7 @@ function searchItems(){
  APPS.forEach(function(a){it.push({k:"Mes créations",n:a.name,sub:a.cat,kw:a.tag+" "+a.desc+" "+a.cat,html:icn(a.id),act:'data-app="'+a.id+'"',btn:"Ouvrir",href:a.url,track:a.id})});
  GIDS.forEach(function(id){var g=GAMES[id];it.push({k:"Jeux",n:g.full,sub:"Tycoon",kw:"tycoon jeu "+g.tag,html:icn(id),act:'data-game="'+id+'"',btn:"Jouer"})});
  myApps().forEach(function(a,k){it.push({k:"Mon iPhone",n:a.n,sub:"App de ton iPhone",kw:a.u,html:'<span class="ic">'+letterIcon(a)+'</span>',href:a.u,btn:"Ouvrir"})});
- [["Mes succès","profil trophees niveau xp","data-profile=\"1\""],["Fond d'écran et thème","personnaliser couleur sombre clair theme wallpaper","data-custom=\"1\""],["Ajouter une app","youtube tiktok instagram snapchat ajouter","data-add=\"1\""],["Dossier Tycoon","bastion mafia studio","data-folder=\"1\""]].forEach(function(a){it.push({k:"Raccourcis",n:a[0],sub:"Prisme",kw:a[1],html:'<span class="ic sic">'+limaLogo("#121316")+'</span>',act:a[2]})});
+ [["Mes succès","profil trophees niveau xp","data-profile=\"1\""],["Fond d'écran et thème","personnaliser couleur sombre clair theme wallpaper","data-custom=\"1\""],["Ajouter une app","youtube tiktok instagram snapchat ajouter","data-add=\"1\""],["Dossier Tycoon","bastion mafia studio","data-folder=\"1\""]].forEach(function(a){it.push({k:"Raccourcis",n:a[0],sub:"Pop",kw:a[1],html:'<span class="ic sic">'+limaLogo("#121316")+'</span>',act:a[2]})});
  return it;
 }
 function openSearch(){
@@ -1602,7 +1624,7 @@ var cur=null,GM=null,S=null,tab=null,tick=null,lastT=0,lastSig="",lastSave=0,she
 function openGame(id,skipHash){
  closeOverlay();cur=id;GM=GAMES[id];S=gload(id);tab=GM.tabs[0][0];sheetFn=null;
  var gm=$("#game");gm.className=GM.cls;gm.hidden=false;document.body.style.overflow="hidden";
- gm.innerHTML='<div class="wrap"><div class="g-top"><button class="g-back" data-back="1" aria-label="Retour au store"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 5l-7 7 7 7"/></svg></button><div class="g-title"><small>Prisme · Tycoon</small><b>'+GM.full+'</b></div></div>'
+ gm.innerHTML='<div class="wrap"><div class="g-top"><button class="g-back" data-back="1" aria-label="Retour au store"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 5l-7 7 7 7"/></svg></button><div class="g-title"><small>Pop · Tycoon</small><b>'+GM.full+'</b></div></div>'
   +'<div class="g-hud"><div class="chips" id="gTop"></div><div class="g-rank"><span>Rang : <b id="gRank"></b></span><span id="gNext"></span></div><div class="bar"><i id="gBar"></i></div></div>'
   +'<div class="tabs" id="gTabs"></div><div id="gBody"></div></div><div id="gSheet"></div>';
  // offline
@@ -1676,24 +1698,21 @@ window.addEventListener("pagehide",function(){if(cur)gsave(cur,S)});
 window.addEventListener("resize",function(){if(!cur){var b=$(".feat");drawFeat(b?b.dataset.game:"bastion")}});
 
 /* ---------- LOGO + INTRO ---------- */
-/* Prisme mark: a rounded crystal triangle split into three spectrum facets, with a spark of light at its heart. */
-var PF=[["M50 16 86 78 50 57.3Z","#FFB340","#FF2D55","1 0"],["M86 78 14 78 50 57.3Z","#34E07A","#0A84FF","0 1"],["M14 78 50 16 50 57.3Z","#5E5CE6","#D35CFF","-1 0"]];
-function prismDefs(){return '<defs><radialGradient id="pmB" cx=".5" cy=".42" r=".75"><stop offset="0" stop-color="#1E1E3A"/><stop offset="1" stop-color="#06060B"/></radialGradient>'+PF.map(function(f,i){return '<linearGradient id="pmF'+i+'" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="'+f[1]+'"/><stop offset="1" stop-color="'+f[2]+'"/></linearGradient>'}).join("")+'<radialGradient id="pmS"><stop offset="0" stop-color="#fff"/><stop offset=".35" stop-color="#fff" stop-opacity=".6"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient><linearGradient id="pmE" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#fff"/></linearGradient><filter id="pmBl" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="3"/></filter></defs>'}
-function prismFacets(cls){return PF.map(function(f,i){var d=f[3].split(" ");return '<path class="'+(cls||"")+'" style="--dx:'+(d[0]*30)+'px;--dy:'+(d[1]*30-(i===0?0:0))+'px;--r:'+(i*40-40)+'deg" d="'+f[0]+'" fill="url(#pmF'+i+')" stroke="url(#pmF'+i+')" stroke-width="7" stroke-linejoin="round"/>'}).join("")}
-var PCUTS='<path d="M50 57.3 50 16M50 57.3 86 78M50 57.3 14 78" stroke="#0B0B16" stroke-opacity=".55" stroke-width="2.2" stroke-linecap="round"/>';
-function prismSpark(cls){return '<g class="'+(cls||"")+'"><circle cx="50" cy="57.3" r="13" fill="url(#pmS)" opacity=".85"/><path d="M50 47.5Q51 56.3 59.8 57.3 51 58.3 50 67.1 49 58.3 40.2 57.3 49 56.3 50 47.5Z" fill="#fff"/></g>'}
-function limaLogo(bg){return '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">'+prismDefs()+(bg?'<rect width="100" height="100" fill="url(#pmB)"/>':"")+'<g opacity=".55" filter="url(#pmBl)">'+prismFacets()+'</g>'+prismFacets()+PCUTS+'<path d="M45 27 30 54" stroke="#fff" stroke-opacity=".45" stroke-width="2" stroke-linecap="round"/>'+prismSpark()+'</svg>'}
+/* Pop mark: a glossy soap bubble on a bubblegum gradient, with two little bubbles. */
+function popDefs(){return '<defs><linearGradient id="ppB" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FF5FA2"/><stop offset=".55" stop-color="#FF4D6D"/><stop offset="1" stop-color="#FF9A3C"/></linearGradient><radialGradient id="ppU" cx=".42" cy=".38" r=".62"><stop offset="0" stop-color="#fff" stop-opacity=".08"/><stop offset=".72" stop-color="#fff" stop-opacity=".22"/><stop offset=".86" stop-color="#9FF3FF" stop-opacity=".75"/><stop offset=".93" stop-color="#FFE38A" stop-opacity=".9"/><stop offset="1" stop-color="#fff" stop-opacity=".95"/></radialGradient></defs>'}
+function bubble(cx,cy,r,cls){return '<g class="'+(cls||"")+'"><circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="url(#ppU)"/><ellipse cx="'+(cx-r*.36)+'" cy="'+(cy-r*.4)+'" rx="'+(r*.3)+'" ry="'+(r*.17)+'" transform="rotate(-35 '+(cx-r*.36)+' '+(cy-r*.4)+')" fill="#fff" fill-opacity=".9"/><circle cx="'+(cx+r*.42)+'" cy="'+(cy+r*.44)+'" r="'+(r*.07)+'" fill="#fff" fill-opacity=".8"/></g>'}
+function limaLogo(bg){return '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">'+popDefs()+(bg?'<rect width="100" height="100" fill="url(#ppB)"/>':"")+bubble(46,54,28)+bubble(77,26,9)+bubble(24,20,5.5)+'</svg>'}
 function playIntro(){
  if(REDUCE||GAMES[location.hash.slice(1)])return;
- var h='<div id="lintro" class="pz" role="presentation"><div class="pgrid"></div><div class="pflash"></div><div class="lstage"><svg class="pmark" viewBox="0 0 100 100" overflow="visible">'+prismDefs()
-  +'<circle class="pring" cx="50" cy="57.3" r="20" fill="none" stroke="#fff" stroke-width="1.2"/><circle class="pring r2" cx="50" cy="57.3" r="20" fill="none" stroke="#9FB4FF" stroke-width="1"/>'
-  +'<path class="pbeam" d="M-90 57.3H50" stroke="url(#pmE)" stroke-width="2.6" stroke-linecap="round" pathLength="100"/>'
-  +'<g class="pglow" filter="url(#pmBl)">'+prismFacets("pfac")+'</g>'+prismFacets("pfac")+'<g class="pcuts">'+PCUTS+'</g>'+prismSpark("pspark")+'</svg>'
-  +'<div class="pword" data-t="PRISME">PRISME</div><div class="ptag">Toutes tes apps. Une seule lumière.</div></div><div class="pwipe"></div></div>';
+ var b="",dr="";
+ for(var i=0;i<22;i++){var s=Math.round(rand(10,46));b+='<i class="pb" style="--x:'+rand(0,100).toFixed(1)+'%;--s:'+s+'px;--d:'+rand(0,1.1).toFixed(2)+'s;--t:'+rand(1.6,2.8).toFixed(2)+'s;--w:'+rand(-30,30).toFixed(0)+'px"></i>'}
+ for(var k=0;k<14;k++){var a=k/14*Math.PI*2,r=rand(90,150);dr+='<i class="pd" style="--dx:'+(Math.cos(a)*r).toFixed(0)+'px;--dy:'+(Math.sin(a)*r).toFixed(0)+'px;--s:'+rand(5,12).toFixed(0)+'px"></i>'}
+ var h='<div id="lintro" class="pop" role="presentation"><div class="pbs">'+b+'</div><div class="lstage"><div class="pbig"><svg viewBox="0 0 100 100">'+popDefs()+bubble(50,50,46)+'</svg></div><div class="pring2"></div><div class="pdrops">'+dr+'</div>'
+  +'<div class="pword2">'+"pop".split("").map(function(c,k){return '<span style="--k:'+k+'">'+c+'</span>'}).join("")+'</div><div class="ptag2">Toutes tes apps, en un pop.</div></div></div>';
  document.body.insertAdjacentHTML("beforeend",h);document.documentElement.classList.add("intro");
  var el=document.getElementById("lintro"),gone=false;
  function end(){if(gone)return;gone=true;el.classList.add("out");document.documentElement.classList.remove("intro");setTimeout(function(){el.remove()},800)}
- el.addEventListener("click",end);setTimeout(end,3600);
+ el.addEventListener("click",end);setTimeout(end,3300);
 }
 
 applyLook();trackDay();renderStore();playIntro();setTimeout(checkTrophies,3200);

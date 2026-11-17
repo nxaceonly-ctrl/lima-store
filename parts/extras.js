@@ -12,8 +12,8 @@ function streak(days){var set={},n=0;days.forEach(function(d){set[d]=1});var t=n
 /* ---------- TROPHIES ---------- */
 var TIER={b:["Bronze",10,"#C08457"],a:["Argent",25,"#A7B0BC"],o:["Or",50,"#E3B341"]};
 var TROPHIES=[
- ["bienvenue","Bienvenue","Ouvre Prisme pour la première fois.","b",function(c){return true}],
- ["explorateur","Explorateur","Ouvre 5 créations différentes depuis Prisme.","a",function(c){return Object.keys(c.st.opens).length>=5}],
+ ["bienvenue","Bienvenue","Ouvre Pop pour la première fois.","b",function(c){return true}],
+ ["explorateur","Explorateur","Ouvre 5 créations différentes depuis Pop.","a",function(c){return Object.keys(c.st.opens).length>=5}],
  ["fidele","Fidèle","Viens 3 jours différents.","b",function(c){return c.st.days.length>=3}],
  ["serie","En série","Viens 7 jours d'affilée.","o",function(c){return streak(c.st.days)>=7}],
  ["collection","Collectionneur","Ajoute 3 apps dans Mon iPhone.","b",function(c){return myApps().length>=3}],
@@ -131,7 +131,7 @@ function searchItems(){
  APPS.forEach(function(a){it.push({k:"Mes créations",n:a.name,sub:a.cat,kw:a.tag+" "+a.desc+" "+a.cat,html:icn(a.id),act:'data-app="'+a.id+'"',btn:"Ouvrir",href:a.url,track:a.id})});
  GIDS.forEach(function(id){var g=GAMES[id];it.push({k:"Jeux",n:g.full,sub:"Tycoon",kw:"tycoon jeu "+g.tag,html:icn(id),act:'data-game="'+id+'"',btn:"Jouer"})});
  myApps().forEach(function(a,k){it.push({k:"Mon iPhone",n:a.n,sub:"App de ton iPhone",kw:a.u,html:'<span class="ic">'+letterIcon(a)+'</span>',href:a.u,btn:"Ouvrir"})});
- [["Mes succès","profil trophees niveau xp","data-profile=\"1\""],["Fond d'écran et thème","personnaliser couleur sombre clair theme wallpaper","data-custom=\"1\""],["Ajouter une app","youtube tiktok instagram snapchat ajouter","data-add=\"1\""],["Dossier Tycoon","bastion mafia studio","data-folder=\"1\""]].forEach(function(a){it.push({k:"Raccourcis",n:a[0],sub:"Prisme",kw:a[1],html:'<span class="ic sic">'+limaLogo("#121316")+'</span>',act:a[2]})});
+ [["Mes succès","profil trophees niveau xp","data-profile=\"1\""],["Fond d'écran et thème","personnaliser couleur sombre clair theme wallpaper","data-custom=\"1\""],["Ajouter une app","youtube tiktok instagram snapchat ajouter","data-add=\"1\""],["Dossier Tycoon","bastion mafia studio","data-folder=\"1\""]].forEach(function(a){it.push({k:"Raccourcis",n:a[0],sub:"Pop",kw:a[1],html:'<span class="ic sic">'+limaLogo("#121316")+'</span>',act:a[2]})});
  return it;
 }
 function openSearch(){
