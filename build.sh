@@ -16,3 +16,4 @@ wrap ../frequence/frequence.html site/apps/frequence.html "Fréquence" "#0D1410"
 wrap volta/volta.html site/apps/volta.html "Volta" "#0B0B0F"
 wrap ../ciel/ciel.html site/apps/ciel.html "Ciel" "#243A6B"
 wrap breche/breche.html site/apps/breche.html "Brèche" "#07080C"
+wrap halo/halo.html site/apps/halo.html "Halo" "#000000" '<link rel="apple-touch-icon" href="../halo-icon.png"><link rel="icon" href="../halo-icon.png">'
