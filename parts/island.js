@@ -5,7 +5,8 @@ var DISTRICTS=[
  {k:"arcade",name:"Quartier Arcade",at:[930,300],col:"#7C5CFF",ids:[["breche",905,440],["qg",1050,560],["nocta",770,330],["frequence",1090,730],["champion",950,640]]},
  {k:"tycoon",name:"Quartier Tycoon",at:[960,1180],col:"#E8A33D",ids:[["bastion",880,960],["mafia",1040,880],["studio",800,1090]]},
  {k:"vie",name:"Quartier Vie",at:[380,420],col:"#2FBF71",ids:[["ascendant",440,560],["ciel",580,420],["azimut",380,770],["velours",530,920]]},
- {k:"son",name:"Studio son",at:[1180,430],col:"#FF4D8D",ids:[["volta",1160,560]]}
+ {k:"son",name:"Studio son",at:[1180,430],col:"#FF4D8D",ids:[["volta",1160,560]]},
+ {k:"cine",name:"Cinéma",at:[360,1130],col:"#FF453A",ids:[["kino",450,1060]]}
 ];
 function islandR(a){return 560+40*Math.sin(3*a)+26*Math.sin(5*a+1)+14*Math.sin(9*a+2)}
 function isl(){return {cam:{x:0,y:0,s:.8},v:{x:0,y:0},sel:null}}
