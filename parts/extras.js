@@ -128,9 +128,9 @@ function setLook(k,v){var l=look();l[k]=v;store.set("lima.look",l);applyLook()}
 function norm(s){return String(s).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"")}
 function searchItems(){
  var it=[];
- APPS.forEach(function(a){it.push({k:"Mes créations",n:a.name,sub:a.cat,kw:a.tag+" "+a.desc+" "+a.cat,html:icn(a.id),act:'data-app="'+a.id+'"',btn:"OUVRIR",href:a.url,track:a.id})});
- GIDS.forEach(function(id){var g=GAMES[id];it.push({k:"Jeux",n:g.full,sub:"Tycoon",kw:"tycoon jeu "+g.tag,html:icn(id),act:'data-game="'+id+'"',btn:"JOUER"})});
- myApps().forEach(function(a,k){it.push({k:"Mon iPhone",n:a.n,sub:"App de ton iPhone",kw:a.u,html:'<span class="ic">'+letterIcon(a)+'</span>',href:a.u,btn:"OUVRIR"})});
+ APPS.forEach(function(a){it.push({k:"Mes créations",n:a.name,sub:a.cat,kw:a.tag+" "+a.desc+" "+a.cat,html:icn(a.id),act:'data-app="'+a.id+'"',btn:"Ouvrir",href:a.url,track:a.id})});
+ GIDS.forEach(function(id){var g=GAMES[id];it.push({k:"Jeux",n:g.full,sub:"Tycoon",kw:"tycoon jeu "+g.tag,html:icn(id),act:'data-game="'+id+'"',btn:"Jouer"})});
+ myApps().forEach(function(a,k){it.push({k:"Mon iPhone",n:a.n,sub:"App de ton iPhone",kw:a.u,html:'<span class="ic">'+letterIcon(a)+'</span>',href:a.u,btn:"Ouvrir"})});
  [["Mes succès","profil trophees niveau xp","data-profile=\"1\""],["Fond d'écran et thème","personnaliser couleur sombre clair theme wallpaper","data-custom=\"1\""],["Ajouter une app","youtube tiktok instagram snapchat ajouter","data-add=\"1\""],["Dossier Tycoon","bastion mafia studio","data-folder=\"1\""]].forEach(function(a){it.push({k:"Raccourcis",n:a[0],sub:"Lima",kw:a[1],html:'<span class="ic sic">'+limaLogo("#121316")+'</span>',act:a[2]})});
  return it;
 }
@@ -142,7 +142,7 @@ function openSearch(){
  renderSearch("");setTimeout(function(){q.focus()},60);
 }
 function hitRow(x,big){
- var right=x.href?'<a class="pill" data-go="1" '+(x.track?'data-track="'+x.track+'" ':"")+'href="'+esc(x.href)+'"'+(/^https?:|^apps\//.test(x.href)?' target="_blank" rel="noopener"':"")+'>'+x.btn+'</a>':'<button class="pill" data-go="1" '+x.act+'>'+(x.btn||"OUVRIR")+'</button>';
+ var right=x.href?'<a class="pill" data-go="1" '+(x.track?'data-track="'+x.track+'" ':"")+'href="'+esc(x.href)+'"'+(/^https?:|^apps\//.test(x.href)?' target="_blank" rel="noopener"':"")+'>'+x.btn+'</a>':'<button class="pill" data-go="1" '+x.act+'>'+(x.btn||"Ouvrir")+'</button>';
  return '<div class="arow'+(big?" hit":"")+'"><button class="spm" '+(x.act||'data-noop="1"')+'>'+x.html+'<span class="t"><b>'+esc(x.n)+'</b><small>'+esc(x.sub)+'</small></span></button>'+right+'</div>';
 }
 function renderSearch(qs){
