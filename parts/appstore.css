@@ -19,7 +19,7 @@
 .tabbar .tbpill button{flex:1;max-width:none;position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;font-size:10px;font-weight:600;color:var(--label);padding:0;transition:color .3s}
 .tabbar .tbpill button.on{color:var(--blue)}
 .tabbar svg{width:25px;height:25px}
-.tbind{position:absolute;top:4px;bottom:4px;left:4px;width:calc((100% - 8px)/3);border-radius:999px;background:var(--chip);transform:translateX(calc(var(--i,0)*100%));transition:transform .55s var(--spring),opacity .25s}
+.tbind{position:absolute;top:4px;bottom:4px;left:4px;width:calc((100% - 8px)/4);border-radius:999px;background:var(--chip);transform:translateX(calc(var(--i,0)*100%));transition:transform .55s var(--spring),opacity .25s}
 .tabbar.nosel .tbind{opacity:0}
 .tabbar .tbsearch{flex:none;max-width:62px;padding:0;width:62px;height:62px;border-radius:50%;display:grid;place-items:center;color:var(--label);transition:color .3s,transform .3s var(--spring)}
 .tbsearch svg{width:23px;height:23px}
@@ -377,3 +377,70 @@ body{letter-spacing:-.022em}
 .pword2 span{display:inline-block;transform:scale(0);animation:pLet .7s cubic-bezier(.3,1.8,.5,1) calc(1.62s + var(--k) * .08s) forwards}
 @keyframes pLet{to{transform:none}}
 .ptag2{position:absolute;left:0;right:0;top:50%;margin-top:74px;text-align:center;font-size:18px;font-weight:600;opacity:0;animation:lmFade .7s ease 2.25s forwards}
+
+/* ================= ISLAND (v10) ================= */
+.onisland body{overflow:hidden}
+.onisland #navT{display:none}
+.onisland #store{padding:0;max-width:none}
+.island{position:fixed;inset:0;overflow:hidden;touch-action:none;-webkit-user-select:none;user-select:none;background:radial-gradient(120% 90% at 50% 40%,#5FD3E6 0%,#2BA9D6 45%,#1477B8 100%);cursor:grab}
+.island::before{content:"";position:absolute;inset:-50%;background:repeating-radial-gradient(circle at 30% 40%,rgba(255,255,255,.07) 0 2px,transparent 2px 38px),repeating-radial-gradient(circle at 70% 60%,rgba(255,255,255,.05) 0 2px,transparent 2px 52px);animation:waves 18s linear infinite;pointer-events:none}
+@keyframes waves{to{transform:translate(60px,30px)}}
+.island.drag{cursor:grabbing}
+.iworld{position:absolute;left:0;top:0;transform-origin:0 0;will-change:transform}
+.iworld canvas{position:absolute;inset:0;width:100%;height:100%}
+.bld{position:absolute;width:96px;margin:-70px 0 0 -48px;display:flex;flex-direction:column;align-items:center;z-index:2;animation:bob 4s ease-in-out var(--dl) infinite}
+.bld .sh{position:absolute;top:84px;width:86px;height:22px;border-radius:50%;background:rgba(20,60,30,.28);filter:blur(3px)}
+.bld .plinth{position:absolute;top:58px;width:84px;height:34px;border-radius:16px;background:linear-gradient(180deg,color-mix(in srgb,var(--c) 70%,#fff),var(--c));box-shadow:0 6px 0 color-mix(in srgb,var(--c) 70%,#000),0 10px 16px rgba(0,0,0,.2)}
+.bld .tile{position:relative;width:72px;transform:perspective(300px) rotateX(14deg);transition:transform .45s var(--spring);filter:drop-shadow(0 10px 10px rgba(0,0,0,.25))}
+.bld .tile .ic{box-shadow:inset 0 0 0 1px rgba(255,255,255,.25)}
+.bld b{position:relative;margin-top:30px;padding:4px 10px;border-radius:99px;background:rgba(255,255,255,.92);color:#1D1D1F;font-size:13px;font-weight:700;white-space:nowrap;box-shadow:0 4px 10px rgba(0,0,0,.15)}
+.bld:active .tile,.bld.on .tile{transform:perspective(300px) rotateX(0) translateY(-10px) scale(1.12)}
+.bld.on b{background:var(--c);color:#fff}
+.bld.on::after{content:"";position:absolute;top:70px;width:110px;height:40px;border-radius:50%;border:3px solid #fff;opacity:0;animation:ping 1.6s ease-out infinite}
+@keyframes ping{0%{opacity:.9;transform:scale(.5)}100%{opacity:0;transform:scale(1.4)}}
+.dsign{position:absolute;transform:translate(-50%,-50%);padding:7px 14px;border-radius:12px;background:#FFF8EC;color:#5A4630;font-family:ui-rounded,"SF Pro Rounded",var(--f-sysd);font-weight:800;font-size:16px;white-space:nowrap;box-shadow:0 4px 0 #D9C3A0,0 8px 18px rgba(0,0,0,.18);border-top:4px solid var(--c)}
+.fountain{position:absolute;width:120px;height:120px;margin:-60px 0 0 -60px;display:grid;place-items:center;z-index:2;cursor:pointer}
+.fountain .fb{width:96px;height:96px;animation:bob 3s ease-in-out infinite;filter:drop-shadow(0 12px 14px rgba(0,0,0,.25))}
+.fountain .fb svg{width:100%;height:100%}
+.fountain i{position:absolute;left:50%;bottom:50%;width:14px;height:14px;margin-left:-7px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff 0 18%,rgba(255,255,255,.15) 30%,rgba(159,243,255,.7) 85%,#fff);opacity:0;animation:fbub 3s ease-in calc(var(--i) * .5s) infinite}
+@keyframes fbub{0%{opacity:0;transform:translate(0,0) scale(.4)}15%{opacity:1}100%{opacity:0;transform:translate(calc((var(--i) - 2.5) * 16px),-150px) scale(1.4)}}
+.fountain b{position:absolute;bottom:-26px;font-family:ui-rounded,"SF Pro Rounded",var(--f-sysd);font-weight:800;font-size:22px;color:#fff;text-shadow:0 2px 8px rgba(160,40,70,.5)}
+.island.burst .fountain i{animation-duration:1s}
+.boat{position:absolute;width:70px;margin:-40px 0 0 -35px;display:flex;flex-direction:column;align-items:center;text-decoration:none;color:#fff;z-index:2;animation:sail 5s ease-in-out var(--dl,0s) infinite}
+@keyframes sail{50%{transform:translate(10px,-5px) rotate(3deg)}}
+.boat .sail{width:44px;height:44px;border-radius:12px;overflow:hidden;box-shadow:0 6px 12px rgba(0,0,0,.25);position:relative;z-index:1}
+.boat .sail .letter{font-size:22px}
+.boat .hull{position:absolute;top:36px;width:66px;height:18px;border-radius:0 0 30px 30px;background:linear-gradient(#fff,#DCE6EE);box-shadow:0 6px 14px rgba(0,40,80,.3)}
+.boat b{margin-top:16px;font-size:12px;font-weight:700;text-shadow:0 1px 4px rgba(0,40,90,.6)}
+.cloud{position:absolute;border-radius:50%;background:rgba(255,255,255,.75);filter:blur(18px);pointer-events:none;z-index:3}
+.cloud.c1{width:340px;height:120px;left:-200px;top:260px;animation:cloudgo 70s linear infinite}
+.cloud.c2{width:260px;height:90px;left:-300px;top:900px;animation:cloudgo 90s linear -30s infinite}
+.cloud.c3{width:420px;height:140px;left:-400px;top:1250px;opacity:.7;animation:cloudgo 110s linear -60s infinite}
+@keyframes cloudgo{to{transform:translateX(2000px)}}
+.itop{position:absolute;left:0;right:0;top:0;display:flex;align-items:center;justify-content:space-between;padding:calc(env(safe-area-inset-top,0px) + 10px) max(16px,env(safe-area-inset-right,0px)) 10px max(16px,env(safe-area-inset-left,0px));pointer-events:none;z-index:5}
+.itop>*{pointer-events:auto}
+.ibrand{display:flex;align-items:center;gap:10px;padding:6px 14px 6px 6px;border-radius:99px;background:var(--glass);-webkit-backdrop-filter:blur(20px) saturate(180%);backdrop-filter:blur(20px) saturate(180%);box-shadow:var(--glassshadow),inset 0 0 0 .5px var(--glassline)}
+.ilogo{width:36px;height:36px;border-radius:10px;overflow:hidden;display:block}
+.ilogo svg{width:100%;height:100%;display:block}
+.ibrand b{display:block;font-family:ui-rounded,"SF Pro Rounded",var(--f-sysd);font-size:17px;font-weight:800;color:var(--label)}
+.ibrand small{display:block;font-size:12px;color:var(--label2)}
+.irecenter{position:absolute;right:max(16px,env(safe-area-inset-right,0px));bottom:calc(92px + env(safe-area-inset-bottom,0px));width:46px;height:46px;border-radius:50%;display:grid;place-items:center;color:var(--label);background:var(--glass);-webkit-backdrop-filter:blur(20px) saturate(180%);backdrop-filter:blur(20px) saturate(180%);box-shadow:var(--glassshadow),inset 0 0 0 .5px var(--glassline);z-index:5}
+.icard{position:absolute;left:max(12px,env(safe-area-inset-left,0px));right:max(12px,env(safe-area-inset-right,0px));bottom:calc(84px + env(safe-area-inset-bottom,0px));max-width:480px;margin:0 auto;padding:14px 16px 10px;border-radius:24px;background:var(--glass);-webkit-backdrop-filter:blur(26px) saturate(190%);backdrop-filter:blur(26px) saturate(190%);box-shadow:var(--glassshadow),inset 0 0 0 .5px var(--glassline);z-index:6;transform:translateY(160%);transition:transform .55s var(--spring)}
+.icard.show{transform:none}
+.icin{display:flex;align-items:center;gap:12px;padding-right:26px}
+.icin .ic{width:56px;flex:none}
+.icin .t{flex:1;min-width:0}
+.icin b{display:block;font-size:17px;font-weight:600}
+.icin small{display:block;font-size:13px;color:var(--label2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.icard .link{display:block;width:100%;margin-top:8px;text-align:center;font-size:15px;color:var(--blue)}
+.icx{position:absolute;top:10px;right:10px;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;background:var(--fill);color:var(--label2)}
+.island.night{background:radial-gradient(120% 90% at 50% 40%,#1E4E7A 0%,#0F2B52 50%,#081530 100%)}
+.island.night .iworld canvas{filter:brightness(.55) saturate(.8) hue-rotate(-10deg)}
+.island.night .bld .tile{filter:drop-shadow(0 0 16px color-mix(in srgb,var(--c) 80%,#fff))}
+.island.night .cloud{background:rgba(180,200,255,.18)}
+.island.night .dsign{filter:brightness(.85)}
+@media (prefers-reduced-motion: reduce){.bld,.boat,.cloud,.island::before,.fountain i,.fountain .fb{animation:none!important}}
+#isle{position:fixed;inset:0;z-index:1;transition:transform .55s var(--spring),filter .55s,opacity .7s}
+#isle:empty{display:none}
+#isle.under{transform:translateX(-26%);filter:brightness(.9)}
+.intro #isle{opacity:0;transform:scale(1.1)}
