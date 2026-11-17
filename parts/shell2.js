@@ -77,18 +77,20 @@ window.addEventListener("pagehide",function(){if(cur)gsave(cur,S)});
 window.addEventListener("resize",function(){if(!cur){var b=$(".feat");drawFeat(b?b.dataset.game:"bastion")}});
 
 /* ---------- LOGO + INTRO ---------- */
-function limaLogo(bg){var c=[[0,0,"#7D8CFF"],[0,1],[0,2],[1,2],[2,2]];return '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">'+(bg?'<rect width="100" height="100" fill="'+bg+'"/>':"")+c.map(function(t){return '<rect x="'+(18+t[0]*23)+'" y="'+(18+t[1]*23)+'" width="18" height="18" rx="4.5" fill="'+(t[2]||"#ECE8DF")+'"/>'}).join("")+'<rect x="64" y="18" width="18" height="18" rx="4.5" fill="none" stroke="#ECE8DF" stroke-opacity=".28" stroke-width="1.5" stroke-dasharray="3 3"/></svg>'}
+/* Lima mark: a lime slice seen from above. 8 rounded segments, pith ring, rind. */
+function limeSegs(cls){var s="",n=8,ri=4,ro=25.2,g=11;for(var i=0;i<n;i++){var a0=(i*360/n+g/2-90)*Math.PI/180,a1=((i+1)*360/n-g/2-90)*Math.PI/180;var p=function(r,a){return (50+r*Math.cos(a)).toFixed(2)+" "+(50+r*Math.sin(a)).toFixed(2)};s+='<path class="'+(cls||"")+'" style="--k:'+i+'" d="M'+p(ri+1.5,(a0+a1)/2)+" L"+p(ro,a0)+" A"+ro+" "+ro+" 0 0 1 "+p(ro,a1)+' Z" fill="url(#lmF)" stroke="url(#lmF)" stroke-width="2.2" stroke-linejoin="round"/>'}return s}
+function limeDefs(){return '<defs><radialGradient id="lmF" cx="50" cy="50" r="27" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#F3FFB8"/><stop offset=".55" stop-color="#C6EE5A"/><stop offset="1" stop-color="#86C92E"/></radialGradient><linearGradient id="lmR" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8FD94A"/><stop offset=".6" stop-color="#3FA535"/><stop offset="1" stop-color="#1F7A2C"/></linearGradient><radialGradient id="lmB" cx=".3" cy=".2" r="1"><stop offset="0" stop-color="#26332A"/><stop offset="1" stop-color="#0B0F0C"/></radialGradient></defs>'}
+function limaLogo(bg){return '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">'+limeDefs()+(bg?'<rect width="100" height="100" fill="url(#lmB)"/>':"")+'<circle cx="50" cy="50" r="34" fill="url(#lmR)"/><circle cx="50" cy="50" r="30.6" fill="#F8FDEB"/>'+limeSegs()+'<circle cx="50" cy="50" r="2.4" fill="#F8FDEB"/><path d="M27 36a27 27 0 0 1 17-14" fill="none" stroke="#fff" stroke-opacity=".55" stroke-width="2.2" stroke-linecap="round"/></svg>'}
 function playIntro(){
- var reduce=false;try{reduce=matchMedia("(prefers-reduced-motion: reduce)").matches}catch(e){}
- if(reduce||GAMES[location.hash.slice(1)])return;
- var L={0:"c",3:1,6:1,7:1,8:1},h='<div id="intro" role="presentation"><div class="ibox"><div class="ig">';
- for(var i=0;i<9;i++){var cls=L[i]?(L[i]==="c"?"it c":"it"):"it no";h+='<i class="'+cls+'" style="--d:'+(80+i*70)+'ms;--x:'+Math.round(rand(-140,140))+'px;--y:'+Math.round(rand(-260,-80))+'px;--r:'+Math.round(rand(-90,90))+'deg"></i>'}
- h+='</div><div class="iw">'+"Lima Store".split("").map(function(ch,k){return '<span style="--d:'+(1350+k*45)+'ms"'+(k>4?' class="s"':"")+'>'+(ch===" "?"&nbsp;":ch)+'</span>'}).join("")+'</div><div class="itag">Tes créations · Tes apps · Tes jeux</div></div><div class="ihint">Touche pour passer</div></div>';
- document.body.insertAdjacentHTML("beforeend",h);
- var el=document.getElementById("intro");
- el.addEventListener("click",function(){el.classList.add("skip")});
- el.addEventListener("animationend",function(e){if(e.target===el&&/introOut/.test(e.animationName))el.remove()});
- setTimeout(function(){if(el.parentNode)el.remove()},6000);
+ if(REDUCE||GAMES[location.hash.slice(1)])return;
+ var h='<div id="lintro" role="presentation"><div class="lstage"><svg class="lmark" viewBox="0 0 100 100">'+limeDefs()+'<defs><clipPath id="lmC"><circle cx="50" cy="50" r="34"/></clipPath><linearGradient id="lmS" x1="0" x2="1"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".5" stop-color="#fff" stop-opacity=".75"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient></defs>'
+  +'<g class="lspin"><circle class="lrind" cx="50" cy="50" r="32.3" fill="none" stroke="url(#lmR)" stroke-width="3.4" pathLength="100"/><circle class="lpith" cx="50" cy="50" r="30.6" fill="#F8FDEB"/>'+limeSegs("lseg")+'<circle class="lpith" cx="50" cy="50" r="2.4" fill="#F8FDEB"/></g>'
+  +'<g clip-path="url(#lmC)"><rect class="lshine" x="-60" y="-10" width="40" height="120" fill="url(#lmS)" transform="rotate(20 50 50)"/></g></svg>'
+  +'<div class="lword">'+"Lima Store".split("").map(function(c,k){return '<span style="--k:'+k+'">'+(c===" "?"&nbsp;":c)+'</span>'}).join("")+'</div><div class="ltag">Tes apps. Tes jeux. Au même endroit.</div></div></div>';
+ document.body.insertAdjacentHTML("beforeend",h);document.documentElement.classList.add("intro");
+ var el=document.getElementById("lintro"),gone=false;
+ function end(){if(gone)return;gone=true;el.classList.add("out");document.documentElement.classList.remove("intro");setTimeout(function(){el.remove()},700)}
+ el.addEventListener("click",end);setTimeout(end,3300);
 }
 
 applyLook();trackDay();renderStore();playIntro();setTimeout(checkTrophies,3200);

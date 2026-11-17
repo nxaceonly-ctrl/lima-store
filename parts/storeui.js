@@ -46,7 +46,7 @@ function catName(it){return it.cat.split(" · ").pop()}
 function ratings(){var r=store.get("lima.ratings");return r&&typeof r==="object"?r:{}}
 function opens(id){var s=stats();if(GAMES[id]){var g=store.get("lima2."+id);return (s.opens[id]||0)+(g&&g.last?1:0)}return s.opens[id]||0}
 function ranked(ids){return ids.map(function(id,i){return [id,i]}).sort(function(a,b){return (opens(b[0])-opens(a[0]))||((ratings()[b[0]]||0)-(ratings()[a[0]]||0))||(a[1]-b[1])}).map(function(x){return x[0]})}
-function getBtn(id,cls){var it=item(id);cls=cls?" "+cls:"";if(it.tycoon)return '<button class="pill'+cls+'" data-game="'+id+'">OUVRIR</button>';return '<a class="pill'+cls+'" data-track="'+id+'" href="'+esc(it.url)+'" target="_blank" rel="noopener">OUVRIR</a>'}
+function getBtn(id,cls){var it=item(id);cls=cls?" "+cls:"";if(it.tycoon)return '<button class="pill'+cls+'" data-game="'+id+'">Ouvrir</button>';return '<a class="pill'+cls+'" data-track="'+id+'" href="'+esc(it.url)+'" target="_blank" rel="noopener">Ouvrir</a>'}
 function sub(id){var it=item(id);if(it.tycoon){var s=store.get("lima2."+id);if(s&&s.last)return GAMES[id].summary(s)}return it.tag}
 function arow(a,n){var id=typeof a==="string"?a:a.id,it=item(id);return '<div class="arow" data-detail="'+id+'" role="button" tabindex="0">'+(n?'<span class="rk">'+n+'</span>':"")+icn(id)+'<span class="t"><b>'+esc(it.name)+'</b><small>'+esc(sub(id))+'</small></span>'+getBtn(id)+'</div>'}
 function grow(id){return arow(id)}
@@ -80,7 +80,8 @@ var STORY={
 function storyCard(key,over){
  var st=STORY[key],k=over&&over.k||st.k,t=over&&over.t||st.t;
  if(st.list)return '<div class="tcard list press" data-story="'+key+'" role="button" tabindex="0"><div class="cap"><div class="k">'+k+'</div><h3>'+t+'</h3></div><div class="rows">'+st.list.map(function(id){return arow(id)}).join("")+'</div></div>';
- return '<div class="tcard tall press" data-story="'+key+'" role="button" tabindex="0">'+artHTML(st.art)+'<div class="cap"><div class="k">'+k+'</div><h3>'+t+'</h3></div><div class="foot">'+icn(st.app)+'<div><b>'+esc(item(st.app).name)+'</b><small>'+esc(over&&over.sub||sub(st.app))+'</small></div>'+getBtn(st.app,"glass")+'</div></div>';
+ var ph=st.art==="volta"?"":(CAN_SHOTS&&SHOTS[st.app]?'<div class="hph"><img alt="" src="'+shot(st.app,1)+'"></div>':'<div class="hic">'+icn(st.app)+'</div>');
+ return '<div class="tcard tall ptile press" data-story="'+key+'" role="button" tabindex="0">'+artHTML(st.art)+'<div class="tx"><em>'+k+'</em><h3>'+esc(item(st.app).name)+'</h3><p>'+t+'</p><div class="ctas">'+getBtn(st.app,"solid")+'<span class="ghost">En savoir plus</span></div></div>'+ph+'</div>';
 }
 function viewToday(){
  var best=lastGame(),fid=best?best.id:"mafia",other=fid==="studio"?"bastion":"studio";
@@ -97,11 +98,12 @@ function viewToday(){
 }
 
 /* --- banners, charts, tabs --- */
+function chips(ids){return '<div class="chips2">'+ids.map(function(id){return '<button data-detail="'+id+'">'+icn(id)+'<b>'+esc(item(id).name.replace(" Tycoon",""))+'</b></button>'}).join("")+'</div>'}
 function banners(list){return '<div class="hs bn">'+list.map(function(b){return '<div class="bnr" data-detail="'+b[0]+'" role="button" tabindex="0"><div class="be">'+b[1]+'</div><h3>'+b[2]+'</h3><p>'+b[3]+'</p>'+phoneArt(b[0])+'</div>'}).join("")+'</div>'}
 function chart(ids){return '<div class="hs rows3">'+ranked(ids).map(function(id,i){return arow(id,i+1)}).join("")+'</div>'}
 function viewApps(){
  var mine=myApps(),appIds=APPS.filter(function(a){return GAME_APPS.indexOf(a.id)<0}).map(function(a){return a.id});
- var h=largeTitle("Apps");
+ var h=largeTitle("Apps")+chips(APPS.map(function(a){return a.id}).filter(function(id){return GAME_APPS.indexOf(id)<0}));
  h+=banners([["ascendant","À LA UNE","Ascendant","Tes séances deviennent des quêtes"],["azimut","OUTIL DE TERRAIN","Azimut","Boussole, MGRS et paquetage"],["velours","RENCONTRE","Velours","Entre filles qui s'aiment"],["ciel","CHAQUE SOIR","Ciel","Ton humeur devient un ciel"]]);
  h+=hdr("Tes indispensables","Faites par Seven","apps")+'<div class="hs rows3">'+appIds.map(function(id){return arow(id)}).join("")+'</div>';
  h+=hdr("Top Apps","Celles que tu ouvres le plus","topapps")+chart(appIds);
@@ -110,7 +112,7 @@ function viewApps(){
  return h+'<div class="foottxt">Lima Store · '+allIds().length+' créations</div>';
 }
 function viewGames(){
- var h=largeTitle("Jeux");
+ var h=largeTitle("Jeux")+chips(GAME_APPS.concat(GIDS));
  h+=banners([["breche","NOUVEAU JEU","Brèche","De chasseur E au rang S"],["qg","QUATRE MISSIONS","QG","Tactique, histoire, tir et commandement"],["nocta","ENTRE POTES","Nocta","Petit bac, mot interdit, croquis"],["frequence","LA NUIT","Fréquence","Décode les messages du QG"]]);
  h+=hdr("Dossier Tycoon & RPG","Ça tourne même quand l'appli est fermée")+'<div class="hs big">'+GIDS.map(function(id){var s=store.get("lima2."+id),g=GAMES[id];return '<div class="gcard press" data-detail="'+id+'" role="button" tabindex="0"><canvas data-art="'+id+'"></canvas><div class="cap"><div class="k">Tycoon</div><h3>'+g.full+'</h3><p>'+g.tag+'</p></div><div class="foot">'+icn(id)+'<div>'+(s&&s.last?g.summary(s):"Nouvelle partie")+'</div>'+getBtn(id,"glass")+'</div></div>'}).join("")+'</div>';
  h+=hdr("Top Jeux","Tes jeux les plus lancés","topgames")+chart(GAME_APPS.concat(GIDS));
